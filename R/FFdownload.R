@@ -36,11 +36,12 @@
 #' @importFrom utils download.file unzip
 #' @importFrom xml2 read_html
 #' @importFrom rvest html_attr html_nodes
-#' @importFrom stringdist adist
+#' @importFrom utils adist write.csv
+#' @importFrom plyr mlply
 #'
-#'@export
+#' @export
 FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=FALSE, download=TRUE, download_only=FALSE, listsave=NULL, inputlist=NULL) {
-  cat("Step 1: getting list of all the csv-zip-files!\n")
+  message("Step 1: getting list of all the csv-zip-files!\n")
   URL <- "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html"
   pg <- read_html(URL)
   Flinks <- html_attr(html_nodes(pg, "a"), "href")
@@ -56,7 +57,7 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
 
   if (is.null(tempdir)) {temp <- tempdir()} else {temp <- tempdir}
   if (download){
-    cat("Step 2: Downloading ",length(Findex)," zip-files\n")
+    message("Step 2: Downloading ",length(Findex)," zip-files\n")
     for (i in 1:length(Findex)){
       Fdest <- gsub("ftp/","",Flinks[Findex[i]])
       download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks[Findex[i]]), paste0(temp,"/", Fdest))
@@ -74,8 +75,8 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
 
   # if download_only==TRUE exit
   if(!download_only){
-    cat("Step 3: Start processing ",length(Findex)," csv-files\n")
-    FFdownload <- plyr::mlply(function(y) converter(y), .data=csv_files, .progress = "text")
+    message("Step 3: Start processing ",length(Findex)," csv-files\n")
+    FFdownload <- mlply(function(y) converter(y), .data=csv_files, .progress = "text")
     names(FFdownload) <- vars
     save(FFdownload, file = output_file)
   }

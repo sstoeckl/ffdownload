@@ -2,31 +2,52 @@
 % Please edit documentation in R/FFdownload.R
 \name{FFdownload}
 \alias{FFdownload}
-\title{Downloads Datasets from kenneth french's Website}
+\title{Downloads Datasets from Kenneth French's Website}
 \usage{
 FFdownload(output_file = "data.Rdata", tempdir = NULL,
-  exclude_daily = FALSE, download = TRUE)
+  exclude_daily = FALSE, download = TRUE, download_only = FALSE,
+  listsave = NULL, inputlist = NULL)
 }
 \arguments{
 \item{output_file}{name of the .RData file to be saved (include path if necessary)}
 
 \item{tempdir}{specify if you want to keep downloaded files somewhere save. Seems to be necessary for
-reproducible research as the files on the website seems to change from time to time}
+reproducible research as the files on the website do change from time to time}
 
-\item{exclude_daily}{excludes the daily datasets (are not downloaded) ==> speeds the rpocess up considerably}
+\item{exclude_daily}{excludes the daily datasets (are not downloaded) ==> speeds the pocess up considerably}
 
 \item{download}{set to TRUE if you actually want to download again. set to false and specify tempdir to keep processing the already downloaded files}
+
+\item{download_only}{set to FALSE if you want to process all your downloaded files at once}
+
+\item{listsave}{if not NULL, the list of unzipped files is saved here (good for processing only a limited number of files through inputlist).
+Is written before inputlist is processed.}
+
+\item{inputlist}{if not NULL, FFdownload tries to match the names from the list with the list of zip-files}
 }
 \value{
 RData file
 }
 \description{
-\code{FFdownload} returns an RData file with all datasets from Kenneth French's Website. Should help researchers
-to work with the datasets and update the regularly. Allows for reprducible research.
+\code{FFdownload} returns an RData file with all (possibility to exclude the large daily) datasets from Kenneth French's Website.
+Should help researchers to work with the datasets and update the regularly. Allows for reprducible research. Be aware that processing
+(especially when including daily files) takes quite a long time!
 }
 \examples{
-# FFdownload(output_file = "FF20180909.RData",tempdir = "C:/temp",exclude_daily = TRUE)
-# load("FF20180909.RData")
-# FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
+tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
+# Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
+FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
+# set vector with only files to download (we tray a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
+inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
+# Now process only these files if they can be matched (download only)
+FFdownload(exclude_daily=TRUE,tempdir=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
+# Then process all the downloaded files
+FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=tempd,download=FALSE,download_only=FALSE,inputlist=inputlist)
+load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
+# Example 2: Download all non-daily files and process them
+tempf2 <- tempfile(fileext = ".RData"); tempd2 <- tempdir()
+FFdownload(output_file = tempf2,tempdir = tempd2,exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
+load(tempf2)
+FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
 
 }
