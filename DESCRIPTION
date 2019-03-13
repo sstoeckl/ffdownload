@@ -1,12 +1,12 @@
 Package: FFdownload
 Type: Package
 Title: Download data from Kenneth French`s Website
-Version: 0.0.0.9000
+Version: 1.0.0.0000
 Author: c(person("Annar", "Massimov", email = "", role = c("aut"), comment = "Original developer of FFdownload."))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Downloads all the datasets (you can exclude the daily ones) from Kenneth French's Website, read them and convert them to list of list of xts.
-Depends: R (>= 3.4), utils, stats, rvest, xts, xml2, zoo
+Depends: R (>= 3.4), utils, stats, rvest, xts, xml2, zoo, plyr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

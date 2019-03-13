@@ -36,9 +36,10 @@
 #' @importFrom utils download.file unzip
 #' @importFrom xml2 read_html
 #' @importFrom rvest html_attr html_nodes
-#' @importFrom stringdist adist
+#' @importFrom utils adist write.csv
+#' @importFrom plyr mlply
 #'
-#'@export
+#' @export
 FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=FALSE, download=TRUE, download_only=FALSE, listsave=NULL, inputlist=NULL) {
   cat("Step 1: getting list of all the csv-zip-files!\n")
   URL <- "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html"
@@ -75,7 +76,7 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
   # if download_only==TRUE exit
   if(!download_only){
     cat("Step 3: Start processing ",length(Findex)," csv-files\n")
-    FFdownload <- plyr::mlply(function(y) converter(y), .data=csv_files, .progress = "text")
+    FFdownload <- mlply(function(y) converter(y), .data=csv_files, .progress = "text")
     names(FFdownload) <- vars
     save(FFdownload, file = output_file)
   }
