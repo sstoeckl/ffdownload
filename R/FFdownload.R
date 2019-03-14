@@ -21,7 +21,7 @@
 #' # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 #' FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 #' # set vector with only files to download (we tray a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
-#' inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
+#' inputlist <- c("F-F_Research_Data_Factorsx","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
 #' # Now process only these files if they can be matched (download only)
 #' FFdownload(exclude_daily=TRUE,tempdir=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
 #' # Then process all the downloaded files

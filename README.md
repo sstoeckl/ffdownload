@@ -3,7 +3,7 @@
 FFdownload
 ==========
 
-`R` Code to download Datasets from Kenneth French's Website.
+`R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
 
 Motivation
 ----------
