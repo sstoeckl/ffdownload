@@ -23,7 +23,7 @@
 #' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
 #' inputlist <- c("Research_Data_Factors","Momentum_Factor","ST_Reversal_Factor","LT_Reversal_Factor")
 #' # Now process only these files if they can be matched (download only)
-#' FFdownload(exclude_daily=TRUE,tempdir=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
+#' FFdownload(exclude_daily=FALSE,tempdir=tempd,download=TRUE,download_only=FALSE,inputlist=inputlist,output_file = tempf)
 #' # Then process all the downloaded files
 #' FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=tempd,download=FALSE,download_only=FALSE,inputlist=inputlist)
 #' load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
@@ -68,21 +68,23 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
     if (exclude_daily){Flinks_final <- Flinks_csv_nodaily} else {Flinks_final <- Flinks_csv}
   }
 
-  if (is.null(tempdir)) {temp <- tempdir()} else {temp <- tempdir}
+  temp_download <- tempfile(pattern=""); dir.create(temp_download,showWarnings = FALSE)
   if (download){
     message("Step 2: Downloading ",length(Flinks_final)," zip-files\n")
     for (i in 1:length(Flinks_final)){
-      Fdest <- gsub("ftp/","",Flinks[Findex[i]])
-      download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final[i]), paste0(temp,"/", Fdest))
+      Fdest <- gsub("ftp/","",Flinks_final[i])
+      download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final[i]), paste0(temp_download,"/", Fdest))
     }
   }
 
-  zip_files <- list.files(temp, full.names = TRUE, pattern = "\\.zip$", ignore.case = TRUE) # full path
+  if (!is.null(tempdir)) {dir.create(tempdir,showWarnings = FALSE); file.copy(from = temp_download, to = tempdir, recursive=FALSE)}
 
-  lapply(zip_files, function (x) unzip(zipfile = x, exdir = temp))
+  zip_files <- list.files(temp_download, full.names = TRUE, pattern = "\\.zip$", ignore.case = TRUE) # full path
 
-  csv_files <- list.files(temp, full.names = TRUE, pattern = "\\.csv$", ignore.case = TRUE) # full path
-  csv_files2 <- list.files(temp, full.names = FALSE, pattern = "\\.csv$", ignore.case = TRUE) # only filenames
+  lapply(zip_files, function (x) unzip(zipfile = x, exdir = temp_download))
+
+  csv_files <- list.files(temp_download, full.names = TRUE, pattern = "\\.csv$", ignore.case = TRUE) # full path
+  csv_files2 <- list.files(temp_download, full.names = FALSE, pattern = "\\.csv$", ignore.case = TRUE) # only filenames
   csv_files2_daily <- csv_files2[grep("daily",csv_files2,ignore.case = TRUE)]
   csv_files2_nodaily <- csv_files2[-grep("daily",csv_files2,ignore.case = TRUE)]
 
@@ -96,16 +98,17 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
     message("Step 3: Start processing ",length(Flinks_final)," csv-files\n")
     FFdownload <- mlply(function(y) converter(y), .data=csv_files, .progress = "text")
     names(FFdownload) <- vars
-  }
 
-  # recombine lists
-  if(!exclude_daily){
-    for (i in 1:length(vars_nodaily)){
-      FFdownload[[eval(vars_nodaily[i])]]$daily <- FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]]$daily
-      FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]] <- NULL
+
+    # recombine lists
+    if(!exclude_daily){
+      for (i in 1:length(vars_nodaily)){
+        FFdownload[[eval(vars_nodaily[i])]]$daily <- FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]]$daily
+        FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]] <- NULL
+      }
+
+
     }
-
-
+    save(FFdownload, file = output_file)
   }
-  save(FFdownload, file = output_file)
 }
