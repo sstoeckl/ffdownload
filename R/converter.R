@@ -52,17 +52,24 @@ converter <- function(file) {
   d <- vector()
   for (i in 1:length(datatest)) d[i] <- nchar(as.character(datatest[[i]]$X[1])) == 8
   for (i in 1:length(datatest)) d[i] <- nchar(as.character(datatest[[i]][1,1])) == 8
+  # in case this is true, check if it only contains numbers (a daily date should do so)
+  for (i in 1:length(datatest)) if(d[i]){d[i] <- grepl("^[[:digit:]]+$", datatest[[i]][1,1])}
+
   m <- vector()
   for (i in 1:length(datatest)) m[i] <- nchar(as.character(datatest[[i]]$X[1])) == 6
   for (i in 1:length(datatest)) m[i] <- nchar(as.character(datatest[[i]][1,1])) == 6
+  # in case this is true, check if it only contains numbers (a daily date should do so)
+  for (i in 1:length(datatest)) if(m[i]){m[i] <- grepl("^[[:digit:]]+$", datatest[[i]][1,1])}
+
   a <- vector()
   for (i in 1:length(datatest)) a[i] <- nchar(as.character(datatest[[i]]$X[1])) == 4
   for (i in 1:length(datatest)) a[i] <- nchar(as.character(datatest[[i]][1,1])) == 4
+  # in case this is true, check if it only contains numbers (a daily date should do so)
+  for (i in 1:length(datatest)) if(a[i]){a[i] <- grepl("^[[:digit:]]+$", datatest[[i]][1,1])}
 
   annual  <- lapply(datatest[unlist(a)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y")) )
   monthly <- lapply(datatest[unlist(m)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")))
   daily <- lapply(datatest[unlist(d)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")))
-
 
   return(list(annual = annual, monthly = monthly, daily = daily))
 

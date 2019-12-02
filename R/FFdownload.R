@@ -20,8 +20,8 @@
 #' tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
 #' # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 #' FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
-#' # set vector with only files to download (we tray a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
-#' inputlist <- c("F-F_Research_Data_Factorsx","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
+#' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
+#' inputlist <- c("Research_Data_Factors","Momentum_Factor","ST_Reversal_Factor","LT_Reversal_Factor")
 #' # Now process only these files if they can be matched (download only)
 #' FFdownload(exclude_daily=TRUE,tempdir=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
 #' # Then process all the downloaded files
@@ -46,21 +46,34 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
   pg <- read_html(URL)
   Flinks <- html_attr(html_nodes(pg, "a"), "href")
   Findex <- grep("CSV.zip",Flinks)
-  Fdaily <- grep("daily",Flinks,ignore.case = TRUE)
-  if (exclude_daily){Findex <- setdiff(Findex,Fdaily)}
+  Fdaily <- grep("daily",Flinks[Findex],ignore.case = TRUE)
+
+  Flinks_csv <- Flinks[Findex]
+  Flinks_csv_daily <- Flinks[Findex][Fdaily]
+  Flinks_csv_nodaily <- Flinks[Findex][-Fdaily]
 
   # save list of links if listsave!=NULL
-  if(!is.null(listsave)){write.csv(gsub("ftp/","",Flinks[Findex]),file=listsave)}
+  if(!is.null(listsave)){write.csv(gsub("ftp/","",Flinks_csv),file=listsave)}
 
-  # limit download etc files to those from inputlist if inputlist!=NULL
-  if(!is.null(inputlist)){Findex <- Findex[apply(adist(x=inputlist,y=Flinks[Findex],ignore.case = TRUE), 1, which.min)]}
+  # if there is an input-list
+  if(!is.null(inputlist)){
+    if(exclude_daily){
+      Flinks_final <- Flinks_csv_nodaily[apply(adist(x=inputlist,y=Flinks_csv_nodaily,ignore.case = TRUE), 1, which.min)]
+      } else {
+      Flinks_final <- Flinks_csv_nodaily[apply(adist(x=inputlist,y=Flinks_csv_nodaily,ignore.case = TRUE), 1, which.min)]
+      Flinks_final <- c(Flinks_final,
+                        Flinks_csv_daily[apply(adist(x=inputlist,y=Flinks_csv_daily,ignore.case = TRUE), 1, which.min)])
+    }
+  } else {
+    if (exclude_daily){Flinks_final <- Flinks_csv_nodaily} else {Flinks_final <- Flinks_csv}
+  }
 
   if (is.null(tempdir)) {temp <- tempdir()} else {temp <- tempdir}
   if (download){
-    message("Step 2: Downloading ",length(Findex)," zip-files\n")
-    for (i in 1:length(Findex)){
+    message("Step 2: Downloading ",length(Flinks_final)," zip-files\n")
+    for (i in 1:length(Flinks_final)){
       Fdest <- gsub("ftp/","",Flinks[Findex[i]])
-      download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks[Findex[i]]), paste0(temp,"/", Fdest))
+      download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final[i]), paste0(temp,"/", Fdest))
     }
   }
 
@@ -70,14 +83,29 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
 
   csv_files <- list.files(temp, full.names = TRUE, pattern = "\\.csv$", ignore.case = TRUE) # full path
   csv_files2 <- list.files(temp, full.names = FALSE, pattern = "\\.csv$", ignore.case = TRUE) # only filenames
+  csv_files2_daily <- csv_files2[grep("daily",csv_files2,ignore.case = TRUE)]
+  csv_files2_nodaily <- csv_files2[-grep("daily",csv_files2,ignore.case = TRUE)]
 
+  vars_nodaily <- paste0("x_", gsub("(.*)\\..*", "\\1", csv_files2_nodaily)  )
+  vars_daily <- paste0("x_", gsub("(.*)\\..*", "\\1", csv_files2_daily)  )
   vars <- paste0("x_", gsub("(.*)\\..*", "\\1", csv_files2)  )
+
 
   # if download_only==TRUE exit
   if(!download_only){
-    message("Step 3: Start processing ",length(Findex)," csv-files\n")
+    message("Step 3: Start processing ",length(Flinks_final)," csv-files\n")
     FFdownload <- mlply(function(y) converter(y), .data=csv_files, .progress = "text")
     names(FFdownload) <- vars
-    save(FFdownload, file = output_file)
   }
+
+  # recombine lists
+  if(!exclude_daily){
+    for (i in 1:length(vars_nodaily)){
+      FFdownload[[eval(vars_nodaily[i])]]$daily <- FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]]$daily
+      FFdownload[[eval(vars_daily[grep(vars_nodaily[i],vars_daily)])]] <- NULL
+    }
+
+
+  }
+  save(FFdownload, file = output_file)
 }
