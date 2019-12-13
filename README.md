@@ -1,22 +1,28 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-FFdownload
-==========
 
-`R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
+# FFdownload <a href='https://github/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
-Motivation
-----------
+<!-- badges: start -->
 
-Well, one often needs those datasets for further empirical work and it is a huge PITA to download the (zipped) csv open and then manually seperate them
+[![Github Downloads of all
+releases](https://img.shields.io/github/downloads/sstoeckl/ffdownload/total)](https://github.com/sstoeckl/ffdownload)
+<!-- badges: end -->
 
-Contributors
-------------
+`R` Code to download Datasets from [Kenneth French’s famous
+website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
+
+## Motivation
+
+Well, one often needs those datasets for further empirical work and it
+is a tedious effort to download the (zipped) csv open and then manually
+seperate them
+
+## Contributors
 
 Original code from MasimovR <https://github.com/MasimovR/>
 
-Installation
-------------
+## Installation
 
 You can install FFdownload from github with:
 
@@ -25,8 +31,7 @@ You can install FFdownload from github with:
 devtools::install_github("sstoeckl/ffdownload")
 ```
 
-Example
--------
+## Example
 
 ``` r
 tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
