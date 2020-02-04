@@ -20,10 +20,12 @@
 #' tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
 #' # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 #' FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
+#' read.delim(temptxt,sep = ",")
 #' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
 #' inputlist <- c("Research_Data_Factors","Momentum_Factor","ST_Reversal_Factor","LT_Reversal_Factor")
 #' # Now process only these files if they can be matched (download only)
 #' FFdownload(exclude_daily=FALSE,tempdir=tempd,download=TRUE,download_only=FALSE,inputlist=inputlist,output_file = tempf)
+#' list.files(tempd)
 #' # Then process all the downloaded files
 #' FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=tempd,download=FALSE,download_only=FALSE,inputlist=inputlist)
 #' load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
@@ -43,8 +45,8 @@
 FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=FALSE, download=TRUE, download_only=FALSE, listsave=NULL, inputlist=NULL) {
   message("Step 1: getting list of all the csv-zip-files!\n")
   URL <- "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html"
-  pg <- read_html(URL)
-  Flinks <- html_attr(html_nodes(pg, "a"), "href")
+  pg <- xml2::read_html(URL)
+  Flinks <- rvest::html_attr(rvest::html_nodes(pg, "a"), "href")
   Findex <- grep("CSV.zip",Flinks)
   Fdaily <- grep("daily",Flinks[Findex],ignore.case = TRUE)
 
@@ -71,9 +73,14 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
   temp_download <- tempfile(pattern=""); dir.create(temp_download,showWarnings = FALSE)
   if (download){
     message("Step 2: Downloading ",length(Flinks_final)," zip-files\n")
-    for (i in 1:length(Flinks_final)){
-      Fdest <- gsub("ftp/","",Flinks_final[i])
-      download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final[i]), paste0(temp_download,"/", Fdest))
+    if(capabilities("libcurl")){
+      utils::download.file(url = paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final),
+                    destfile = paste0(temp_download,"/",gsub(pattern = "ftp/","",Flinks_final)), method="libcurl",quite=TRUE)
+    } else {
+      for (i in 1:length(Flinks_final)){
+        Fdest <- gsub("ftp/","",Flinks_final[i])
+        utils::download.file(paste0("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/",Flinks_final[i]), paste0(temp_download,"/", Fdest),quite=TRUE)
+      }
     }
   }
 
