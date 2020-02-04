@@ -14,6 +14,9 @@
 converter <- function(file) {
   data <- readLines(file)
 
+  # replace commas at line ends (case Momentum)
+  data <- gsub(",$", "",gsub(",$", "", data))
+
   data[1] <- paste0(data[1],",")
 
   index <- grep(",", data)
@@ -71,7 +74,7 @@ converter <- function(file) {
   monthly <- lapply(datatest[unlist(m)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")))
   daily <- lapply(datatest[unlist(d)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")))
 
-  return(list(annual = annual, monthly = monthly, daily = daily))
+   return(list(annual = annual, monthly = monthly, daily = daily))
 
 }
 
