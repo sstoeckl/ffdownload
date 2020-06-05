@@ -31,7 +31,7 @@
 #' load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 #' # Example 2: Download all non-daily files and process them
 #' tempf2 <- tempfile(fileext = ".RData"); outd2<- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
-#' FFdownload(output_file = tempf2,tempdir = tempd2,exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
+#' FFdownload(output_file = tempf2,tempdir = outd2, exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
 #' load(tempf2)
 #' FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
 #'
@@ -85,7 +85,6 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
     # copy to final tempdir if wished
     if (!is.null(tempdir)) {dir.create(tempdir,showWarnings = FALSE); file.copy(from = paste0(temp_download,"/",gsub(pattern = "ftp/","",Flinks_final)),
                                                                                 to = tempdir, recursive=TRUE)}
-  }
   zip_files <- list.files(temp_download, full.names = TRUE, pattern = "\\.zip$", ignore.case = TRUE) # full path
 
   lapply(zip_files, function (x) unzip(zipfile = x, exdir = temp_download))
@@ -116,5 +115,6 @@ FFdownload <- function(output_file = "data.Rdata", tempdir=NULL, exclude_daily=F
       }
     }
     save(FFdownload, file = output_file)
+  }
   }
 }
