@@ -3,10 +3,8 @@
 
 # FFdownload <a href='https://github/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
-<!-- badges: start -->
-
-[![Github Downloads of all
-releases](https://img.shields.io/github/downloads/sstoeckl/ffdownload/total)](https://github.com/sstoeckl/ffdownload)
+<!-- badges: start --> 
+[![Travis build status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
 <!-- badges: end -->
 
 `R` Code to download Datasets from [Kenneth French’s famous
