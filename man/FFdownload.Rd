@@ -53,9 +53,11 @@ list.files(outd)
 FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=outd,download=FALSE,download_only=FALSE,inputlist=inputlist)
 load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 # Example 2: Download all non-daily files and process them
+\dontrun{
 tempf2 <- tempfile(fileext = ".RData"); outd2<- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))
 FFdownload(output_file = tempf2,tempdir = outd2, exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
 load(tempf2)
 FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
+}
 
 }
