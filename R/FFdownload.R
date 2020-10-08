@@ -1,13 +1,13 @@
 #' @title Downloads Datasets from Kenneth French's Website
 #'
 #' @description \code{FFdownload} returns an RData file with all (possibility to exclude the large daily) datasets from Kenneth French's Website.
-#' Should help researchers to work with the datasets and update the regularly. Allows for reprducible research. Be aware that processing
+#' Should help researchers to work with the datasets and update the regularly. Allows for reproducible research. Be aware that processing
 #' (especially when including daily files) takes quite a long time!
 #'
 #' @param output_file name of the .RData file to be saved (include path if necessary)
 #' @param tempdir specify if you want to keep downloaded files somewhere save. Seems to be necessary for
 #' reproducible research as the files on the website do change from time to time
-#' @param exclude_daily excludes the daily datasets (are not downloaded) ==> speeds the pocess up considerably
+#' @param exclude_daily excludes the daily datasets (are not downloaded) ==> speeds the process up considerably
 #' @param download set to TRUE if you actually want to download again. set to false and specify tempdir to keep processing the already downloaded files
 #' @param download_only set to FALSE if you want to process all your downloaded files at once
 #' @param listsave if not NULL, the list of unzipped files is saved here (good for processing only a limited number of files through inputlist).
@@ -17,22 +17,27 @@
 #' @return RData file
 #'
 #' @examples
-#' tempf <- tempfile(fileext = ".RData"); outd <- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M")); temptxt <- tempfile(fileext = ".txt")
+#' tempf <- tempfile(fileext = ".RData"); outd <- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
+#' temptxt <- tempfile(fileext = ".txt")
 #' # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 #' FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 #' read.delim(temptxt,sep = ",")
-#' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
+#' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get
+#' # the Momentum Factor)
 #' inputlist <- c("Research_Data_Factors","Momentum_Factor","ST_Reversal_Factor","LT_Reversal_Factor")
 #' # Now process only these files if they can be matched (download only)
-#' FFdownload(exclude_daily=FALSE,tempdir=outd,download=TRUE,download_only=FALSE,inputlist=inputlist,output_file = tempf)
+#' FFdownload(exclude_daily=FALSE,tempdir=outd,download=TRUE,download_only=FALSE,
+#' inputlist=inputlist,output_file = tempf)
 #' list.files(outd)
 #' # Then process all the downloaded files
-#' FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=outd,download=FALSE,download_only=FALSE,inputlist=inputlist)
+#' FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=outd,download=FALSE,
+#' download_only=FALSE,inputlist=inputlist)
 #' load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 #' # Example 2: Download all non-daily files and process them
 #' \dontrun{
 #' tempf2 <- tempfile(fileext = ".RData"); outd2<- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
-#' FFdownload(output_file = tempf2,tempdir = outd2, exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
+#' FFdownload(output_file = tempf2,tempdir = outd2, exclude_daily = TRUE, download = TRUE,
+#' download_only=FALSE, listsave=temptxt)
 #' load(tempf2)
 #' FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
 #' }

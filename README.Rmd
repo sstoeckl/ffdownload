@@ -26,7 +26,7 @@ Well, one often needs those datasets for further empirical work and it is a tedi
 
 ## Contributors
 
-Original code from MasimovR <https://github.com/MasimovR/>
+Original code from MasimovR <https://www.github.com/MasimovR/>
 
 ## Installation
 
