@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# FFdownload <a href='https://github/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# FFdownload <a href='https://github.com/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
  <!-- badges: start -->
   [![Travis build status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
@@ -22,24 +22,29 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Well, one often needs those datasets for further empirical work and it is a tedious effort to download the (zipped) csv open and then manually seperate them
+Well, one often needs those datasets for further empirical work and it is a tedious effort to download the (zipped) csv, open and then manually separate the contained datasets. This package downloads them automatically, and converts them to a list of xts-objects that contain all the information from the csv-files.
 
 ## Contributors
 
-Original code from MasimovR <https://www.github.com/MasimovR/>
+Original code from MasimovR <https://www.github.com/MasimovR/>. Was then heavily redacted by me.
 
 ## Installation
 
-You can install FFdownload from github with:
+You can install FFdownload from cran with 
+```{r cran-installation, eval = FALSE}
+install.packages("FFdownload")
+```
+github with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("sstoeckl/ffdownload")
+devtools::install_github("sstoeckl/FFdownload")
 ```
 
 ## Example
 
 ```{r example, eval=FALSE}
+library(FFdownload)
 tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)

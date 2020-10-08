@@ -1,10 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# FFdownload <a href='https://github/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# FFdownload <a href='https://github.com/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
-<!-- badges: start --> 
-[![Travis build status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
+<!-- badges: start --> [![Travis build
+status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
 <!-- badges: end -->
 
 `R` Code to download Datasets from [Kenneth French’s famous
@@ -13,25 +13,35 @@ website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.htm
 ## Motivation
 
 Well, one often needs those datasets for further empirical work and it
-is a tedious effort to download the (zipped) csv open and then manually
-seperate them
+is a tedious effort to download the (zipped) csv, open and then manually
+separate the contained datasets. This package downloads them
+automatically, and converts them to a list of xts-objects that contain
+all the information from the csv-files.
 
 ## Contributors
 
-Original code from MasimovR <https://github.com/MasimovR/>
+Original code from MasimovR <https://www.github.com/MasimovR/>. Was then
+heavily redacted by me.
 
 ## Installation
 
-You can install FFdownload from github with:
+You can install FFdownload from cran with
+
+``` r
+install.packages("FFdownload")
+```
+
+github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("sstoeckl/ffdownload")
+devtools::install_github("sstoeckl/FFdownload")
 ```
 
 ## Example
 
 ``` r
+library(FFdownload)
 tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
