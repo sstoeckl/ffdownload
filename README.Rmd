@@ -22,20 +22,19 @@ knitr::opts_chunk$set(
 
 ## Motivation
 
-Well, one often needs those datasets for further empirical work and it is a tedious effort to download the (zipped) csv, open and then manually separate the contained datasets. This package downloads them automatically, and converts them to a list of xts-objects that contain all the information from the csv-files.
+One often needs those datasets for further empirical work and it is a tedious effort to download the (zipped) csv, open and then manually separate the contained datasets. This package downloads them automatically, and converts them to a list of xts-objects that contain all the information from the csv-files.
 
 ## Contributors
 
-Original code from MasimovR <https://www.github.com/MasimovR/>. Was then heavily redacted by me.
+Original code from MasimovR <https://github.com/MasimovR/>. Was then heavily redacted by me.
 
 ## Installation
 
-You can install FFdownload from cran with 
+You can install FFdownload from CRAN with 
 ```{r cran-installation, eval = FALSE}
 install.packages("FFdownload")
 ```
-github with:
-
+or directly from github with:
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("sstoeckl/FFdownload")

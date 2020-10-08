@@ -12,26 +12,26 @@ website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.htm
 
 ## Motivation
 
-Well, one often needs those datasets for further empirical work and it
-is a tedious effort to download the (zipped) csv, open and then manually
+One often needs those datasets for further empirical work and it is a
+tedious effort to download the (zipped) csv, open and then manually
 separate the contained datasets. This package downloads them
 automatically, and converts them to a list of xts-objects that contain
 all the information from the csv-files.
 
 ## Contributors
 
-Original code from MasimovR <https://www.github.com/MasimovR/>. Was then
+Original code from MasimovR <https://github.com/MasimovR/>. Was then
 heavily redacted by me.
 
 ## Installation
 
-You can install FFdownload from cran with
+You can install FFdownload from CRAN with
 
 ``` r
 install.packages("FFdownload")
 ```
 
-github with:
+or directly from github with:
 
 ``` r
 # install.packages("devtools")
