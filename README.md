@@ -5,6 +5,8 @@
 
 <!-- badges: start --> [![Travis build
 status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
+<!-- badges: end --> <!-- badges: start --> [![CRAN
+status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
 <!-- badges: end -->
 
 `R` Code to download Datasets from [Kenneth French’s famous
