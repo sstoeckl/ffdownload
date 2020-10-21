@@ -40,6 +40,7 @@ Should help researchers to work with the datasets and update the regularly. Allo
 (especially when including daily files) takes quite a long time!
 }
 \examples{
+\donttest{
 tempf <- tempfile(fileext = ".RData"); outd <- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))
 temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
@@ -57,7 +58,6 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=outd,download=FALSE,
 download_only=FALSE,inputlist=inputlist)
 load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 # Example 2: Download all non-daily files and process them
-\dontrun{
 tempf2 <- tempfile(fileext = ".RData"); outd2<- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))
 FFdownload(output_file = tempf2,tempdir = outd2, exclude_daily = TRUE, download = TRUE,
 download_only=FALSE, listsave=temptxt)

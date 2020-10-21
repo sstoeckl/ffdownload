@@ -1,3 +1,7 @@
+# FFdownload 1.0.4
+
+* Resubmit to CRAN
+
 # FFdownload 1.0.3
 
 * Resubmit to CRAN

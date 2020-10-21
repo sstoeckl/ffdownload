@@ -1,11 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Changed backtick to a single tick in the DESCRIPTION description. Additionally I added the link to the website in the form <https://...>
-* Replaced Author & Maintainer by Authors@R
-* Placed single quotes around 'xts'
-* Changed the version number to only have three digits: 1.0.3 (as this one includes my changes)
-* Changed the URLs in the readme file
+* Put tests that download into `\donttest{}`
   
 ## Test environments
 * local R installation, R 4.0.2
