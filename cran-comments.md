@@ -2,6 +2,7 @@
 This is a resubmission. In this version I have:
 
 * Put tests that download into `\donttest{}`
+* Fix too long line
   
 ## Test environments
 * local R installation, R 4.0.2

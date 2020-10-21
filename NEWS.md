@@ -1,3 +1,8 @@
+# FFdownload 1.0.5
+
+* Resubmit to CRAN
+* Fixed too long line in uncommented example
+
 # FFdownload 1.0.4
 
 * Resubmit to CRAN
