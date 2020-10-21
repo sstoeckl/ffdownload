@@ -1,6 +1,7 @@
 # FFdownload 1.0.4
 
 * Resubmit to CRAN
+* wraped examples that download in `donttest{}` but because cran tests this anyway (see https://stackoverflow.com/questions/63693563/issues-in-r-package-after-cran-asked-to-replace-dontrun-by-donttest) I also commented the second example which takes some time out (as `dontrun()` seem sto also not being lied on cran)
 
 # FFdownload 1.0.3
 
