@@ -139,6 +139,6 @@ FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %
 
 I am grateful to **Kenneth French** for providing all this great
 research data on his website! Our lives would be so much harder without
-this ‘boost’ for productivity. I am also grateful for the kind
+this *boost* for productivity. I am also grateful for the kind
 conversation with Kenneth with regard to this package: He appreciates my
 work on this package giving others easier access to his data sets!
