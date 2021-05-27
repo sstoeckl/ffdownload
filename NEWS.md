@@ -1,3 +1,10 @@
+# FFdownload 1.0.6
+
+* Resubmit to CRAN
+* Corrected variable names to not be similar to a corresponding command (FFdownload -> FFdata, tempdir -> tempd). This is potentially a breaking change, so I additionally included a warning message when the package is loaded.
+* Also corrected date in converter for annual data to Dec of each year.
+* Additionally fixed the download/download_only problem which now should be working
+
 # FFdownload 1.0.5
 
 * Resubmit to CRAN

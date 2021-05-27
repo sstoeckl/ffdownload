@@ -14,12 +14,11 @@ knitr::opts_chunk$set(
 
 # FFdownload <a href='https://github.com/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
- <!-- badges: start -->
+<!-- badges: start -->
+  [![Project Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
   [![Travis build status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
-  <!-- badges: end -->
-  <!-- badges: start -->
- [![CRAN status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
- <!-- badges: end -->
+  [![CRAN status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
+<!-- badges: end -->
 
 
 `R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
@@ -44,23 +43,65 @@ or directly from github with:
 devtools::install_github("sstoeckl/FFdownload")
 ```
 
-## Example
+## Examples
 
-```{r example, eval=FALSE}
+### Example 1: Monthly files
+
+In this example, we use `FFDwonload` to 
+
+1.  get a list of all available monthly zip-files and save that files as *temp.txt*.
+
+```{r example 1a, eval=TRUE, message=FALSE}
 library(FFdownload)
-tempf <- tempfile(fileext = ".RData"); tempd <- tempdir(); temptxt <- tempfile(fileext = ".txt")
+temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
-# set vector with only files to download (we tray a fuzzyjoin, so "Momentum" should be enough to get the Momentum Factor)
-inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
-# Now process only these files if they can be matched (download only)
-FFdownload(exclude_daily=TRUE,tempdir=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
-# Then process all the downloaded files
-FFdownload(output_file = tempf, exclude_daily=TRUE,tempdir=tempd,download=FALSE,download_only=FALSE,inputlist=inputlist)
-load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
-# Example 2: Download all non-daily files and process them
-tempf2 <- tempfile(fileext = ".RData"); tempd2 <- tempdir()
-FFdownload(output_file = tempf2,tempdir = tempd2,exclude_daily = TRUE, download = TRUE, download_only=FALSE, listsave=temptxt)
-load(tempf2)
-FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
 ```
+
+```{r example 1b, message=FALSE, warning=FALSE}
+FFlist <- readr::read_csv(temptxt) %>% dplyr::select(-X1) %>% dplyr::rename(Files=x)
+FFlist %>% dplyr::slice(1:3,(dplyr::n()-2):dplyr::n())
+```
+
+2.  Next, after inspecting the list we specify a vector `inputlist` to only download the datasets we actually need.
+
+```{r example 2, message=FALSE, warning=FALSE}
+tempd <- tempdir()
+inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
+FFdownload(exclude_daily=TRUE,tempd=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
+```
+
+3.  In the final step we process the downloaded files.
+
+```{r example 3a, message=FALSE}
+tempf <- paste0(tempd,"\\FFdata.RData")
+getwd()
+FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
+           download_only=FALSE,inputlist = inputlist)
+```
+
+4. Then we check that everything worked and output a combined file of monthly factors (only show first 5 rows).
+
+```{r example 3b, message=FALSE}
+library(dplyr)
+library(timetk)
+load(file = tempf)
+FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym") %>%
+  left_join(FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
+  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
+  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>% head()
+```
+
+5. No we do the same with annual data:
+
+```{r example 3c, message=FALSE}
+FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %>% timetk::tk_tbl(rename_index = "ym") %>%
+  left_join(FFdata$`x_F-F_Momentum_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
+  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
+  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
+  mutate(ym=) %>% head()
+```
+
+# Acknowledgements
+
+I am grateful to **Kenneth French** for providing all this research data on his website! Our lives would be so much harder without this 'boost' of productivity. I am also grateful for the kind conversation we had with regard to this package: He appreciates my work in providing it and thereby giving easier access to his datasets!

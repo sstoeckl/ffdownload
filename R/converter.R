@@ -70,7 +70,7 @@ converter <- function(file) {
   # in case this is true, check if it only contains numbers (a daily date should do so)
   for (i in 1:length(datatest)) if(a[i]){a[i] <- grepl("^[[:digit:]]+$", datatest[[i]][1,1])}
 
-  annual  <- lapply(datatest[unlist(a)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y")) )
+  annual  <- lapply(datatest[unlist(a)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(paste0(as.character(x[, 1]),"12"), format = "%Y%m")) )
   monthly <- lapply(datatest[unlist(m)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")))
   daily <- lapply(datatest[unlist(d)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")))
 

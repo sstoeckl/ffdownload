@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Put tests that download into `\donttest{}`
+* corrected some errors with downloading and renamed a directory variable that was the same as the command belonging to it.
 * Fix too long line
   
 ## Test environments
