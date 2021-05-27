@@ -135,10 +135,10 @@ FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %
 #> 6 Dez 1932   -9.39   4.91  10.5   0.96 -21.0  11.6   34.4
 ```
 
-# Acknowledgements
+# Acknowledgment
 
-I am grateful to **Kenneth French** for providing all this research data
-on his website! Our lives would be so much harder without this ‘boost’
-of productivity. I am also grateful for the kind conversation we had
-with regard to this package: He appreciates my work in providing it and
-thereby giving easier access to his datasets!
+I am grateful to **Kenneth French** for providing all this great
+research data on his website! Our lives would be so much harder without
+this ‘boost’ for productivity. I am also grateful for the kind
+conversation with Kenneth with regard to this package: He appreciates my
+work on this package giving others easier access to his data sets!
