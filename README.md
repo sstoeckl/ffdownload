@@ -11,6 +11,8 @@ Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repost
 status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)
 <!-- badges: end -->
 
 `R` Code to download Datasets from [Kenneth French’s famous
