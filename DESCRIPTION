@@ -7,5 +7,7 @@ Authors@R: c(person("Sebastian", "Stoeckl", email = "sebastian.stoeckl@uni.li", 
 Description: Downloads all the datasets (you can exclude the daily ones or specify a list of those you are targeting specifically) from Kenneth French's Website at <https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html>, process them and convert them to list of 'xts' (time series).
 Depends: R (>= 3.5.0), utils, stats, rvest, xts, xml2, zoo, plyr
 License: MIT + file LICENSE
+URL: https://github.com/sstoeckl/ffdownload
+BugReports: https://github.com/sstoeckl/ffdownload/issues
 Encoding: UTF-8
 RoxygenNote: 7.1.1
