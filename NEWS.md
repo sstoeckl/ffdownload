@@ -1,7 +1,7 @@
 # FFdownload 1.1
 
 * Resubmit to CRAN
-* Added possibility to create list of tiibbles rather thanlist of xts
+* Added possibility to create list of tibbles rather than list of xts
 
 # FFdownload 1.0.6
 
