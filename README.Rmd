@@ -109,7 +109,7 @@ FFfive %>% head()
 
 6.  Finally we plot wealth indices for 6 of these factors:
 
-```{r}
+```{r FFpic}
 FFfive %>% 
   pivot_longer(Mkt.RF:ST_Rev,names_to="FFVar",values_to="FFret") %>% mutate(FFret=FFret/100,date=as.Date(date)) %>% 
   filter(date>="1960-01-01",!FFVar=="RF") %>% group_by(FFVar) %>% arrange(FFVar,date) %>%

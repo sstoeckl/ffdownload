@@ -18,6 +18,11 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)](https://cr
 `R` Code to download Datasets from [Kenneth French’s famous
 website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
 
+# Update
+
+With version 1.1.0 we have added the possibility to format the data sets
+saved in the list as `tibble` for direct proceeding.
+
 ## Motivation
 
 One often needs those datasets for further empirical work and it is a
@@ -63,9 +68,9 @@ FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt
 ```
 
 ``` r
-FFlist <- readr::read_csv(temptxt) %>% dplyr::select(-X1) %>% dplyr::rename(Files=x)
+FFlist <- readr::read_csv(temptxt) %>% dplyr::select(2) %>% dplyr::rename(Files=x)
 FFlist %>% dplyr::slice(1:3,(dplyr::n()-2):dplyr::n())
-#> # A tibble: 6 x 1
+#> # A tibble: 6 × 1
 #>   Files                                          
 #>   <chr>                                          
 #> 1 F-F_Research_Data_Factors_CSV.zip              
@@ -85,14 +90,15 @@ inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversa
 FFdownload(exclude_daily=TRUE,tempd=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
 ```
 
-3.  In the final step we process the downloaded files.
+3.  In the final step we process the downloaded files (formatting the
+    output data.frames as tibbles for direct proceeding):
 
 ``` r
 tempf <- paste0(tempd,"\\FFdata.RData")
 getwd()
-#> [1] "D:/University of Liechtenstein/ROOT/Packages/ffdownload"
+#> [1] "D:/OneDrive - University of Liechtenstein/ROOT/Packages/ffdownload"
 FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
-           download_only=FALSE,inputlist = inputlist)
+           download_only=FALSE,inputlist = inputlist, format="tbl")
 #>   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%
 ```
 
@@ -100,42 +106,60 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
     monthly factors (only show first 5 rows).
 
 ``` r
-library(dplyr)
+library(tidyverse)
 library(timetk)
 load(file = tempf)
-FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym") %>%
-  left_join(FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
-  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
-  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$monthly$Temp2 %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>% head()
-#> # A tibble: 6 x 8
-#>   ym        Mkt.RF   SMB   HML    RF   Mom LT_Rev ST_Rev
+FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% 
+  left_join(FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2, by="date") %>%
+  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$monthly$Temp2,by="date") %>%
+  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$monthly$Temp2,by="date") %>% head()
+#> # A tibble: 6 × 8
+#>   date      Mkt.RF   SMB   HML    RF   Mom LT_Rev ST_Rev
 #>   <yearmon>  <dbl> <dbl> <dbl> <dbl> <dbl>  <dbl>  <dbl>
-#> 1 Jul 1926    2.96 -2.3  -2.87  0.22    NA     NA  -1.84
-#> 2 Aug 1926    2.64 -1.4   4.19  0.25    NA     NA   1.39
-#> 3 Sep 1926    0.36 -1.32  0.01  0.23    NA     NA  -0.18
-#> 4 Okt 1926   -3.24  0.04  0.51  0.32    NA     NA  -2.03
-#> 5 Nov 1926    2.53 -0.2  -0.35  0.31    NA     NA   0.96
-#> 6 Dez 1926    2.62 -0.04 -0.02  0.28    NA     NA   1.95
+#> 1 Jul 1926    2.96 -2.56 -2.43  0.22    NA     NA  -1.87
+#> 2 Aug 1926    2.64 -1.17  3.82  0.25    NA     NA   1.43
+#> 3 Sep 1926    0.36 -1.4   0.13  0.23    NA     NA  -0.17
+#> 4 Okt 1926   -3.24 -0.09  0.7   0.32    NA     NA  -2.11
+#> 5 Nov 1926    2.53 -0.1  -0.51  0.31    NA     NA   1   
+#> 6 Dez 1926    2.62 -0.03 -0.05  0.28    NA     NA   2.01
 ```
 
 5.  No we do the same with annual data:
 
 ``` r
-FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %>% timetk::tk_tbl(rename_index = "ym") %>%
-  left_join(FFdata$`x_F-F_Momentum_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
-  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
-  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$annual$`january-december` %>% timetk::tk_tbl(rename_index = "ym"),by="ym") %>%
-  mutate(ym=) %>% head()
-#> # A tibble: 6 x 8
-#>   ym        Mkt.RF    SMB    HML    RF   Mom LT_Rev ST_Rev
+FFfive <- FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %>% 
+  left_join(FFdata$`x_F-F_Momentum_Factor`$annual$`january-december` ,by="date") %>%
+  left_join(FFdata$`x_F-F_LT_Reversal_Factor`$annual$`january-december`,by="date") %>%
+  left_join(FFdata$`x_F-F_ST_Reversal_Factor`$annual$`january-december` ,by="date") 
+FFfive %>% head()
+#> # A tibble: 6 × 8
+#>   date      Mkt.RF    SMB    HML    RF   Mom LT_Rev ST_Rev
 #>   <yearmon>  <dbl>  <dbl>  <dbl> <dbl> <dbl>  <dbl>  <dbl>
-#> 1 Dez 1927   29.5   -2.46  -3.75  3.12  23.9  NA    -17.5 
-#> 2 Dez 1928   35.4    4.41  -5.83  3.56  28.6  NA    -10.8 
-#> 3 Dez 1929  -19.5  -30.8   12.0   4.75  21.4  NA    -15.0 
-#> 4 Dez 1930  -31.2   -5.19 -12.3   2.41  25.9  NA     -1.39
-#> 5 Dez 1931  -45.1    3.51 -14.3   1.07  24.2  -2.35  23.6 
-#> 6 Dez 1932   -9.39   4.91  10.5   0.96 -21.0  11.6   34.4
+#> 1 Dez 1927   29.5   -2.04  -4.54  3.12  24.1  NA    -17.7 
+#> 2 Dez 1928   35.4    4.51  -6.17  3.56  29.1  NA    -10.8 
+#> 3 Dez 1929  -19.5  -30.7   11.7   4.75  21.1  NA    -15.0 
+#> 4 Dez 1930  -31.2   -5.17 -11.5   2.41  25.7  NA     -0.86
+#> 5 Dez 1931  -45.1    3.7  -14.0   1.07  23.8  -3.24  24.2 
+#> 6 Dez 1932   -9.39   4.4   11.1   0.96 -21.8   9.27  30.5
 ```
+
+6.  Finally we plot wealth indices for 6 of these factors:
+
+``` r
+FFfive %>% 
+  pivot_longer(Mkt.RF:ST_Rev,names_to="FFVar",values_to="FFret") %>% mutate(FFret=FFret/100,date=as.Date(date)) %>% 
+  filter(date>="1960-01-01",!FFVar=="RF") %>% group_by(FFVar) %>% arrange(FFVar,date) %>%
+  mutate(FFret=ifelse(date=="1960-01-01",1,FFret),FFretv=cumprod(1+FFret)-1) %>% 
+  ggplot(aes(x=date,y=FFretv,col=FFVar,type=FFVar)) + geom_line(lwd=1.2) + scale_y_log10() +
+  labs(title="FF5 Factors plus Momentum", subtitle="Cumulative wealth plots",ylab="cum. returns") + 
+  scale_colour_viridis_d("FFvar") +
+  theme_bw() + theme(legend.position="bottom")
+#> Warning in self$trans$transform(x): NaNs wurden erzeugt
+#> Warning: Transformation introduced infinite values in continuous y-axis
+#> Warning: Removed 11 row(s) containing missing values (geom_path).
+```
+
+![](README-FFpic-1.png)<!-- -->
 
 # Acknowledgment
 
