@@ -11,7 +11,8 @@ FFdownload(
   download = TRUE,
   download_only = FALSE,
   listsave = NULL,
-  inputlist = NULL
+  inputlist = NULL,
+  format = "xts"
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ reproducible research as the files on the website do change from time to time}
 Is written before inputlist is processed.}
 
 \item{inputlist}{if not NULL, FFdownload tries to match the names from the list with the list of zip-files}
+
+\item{format}{(set to xts) specify "xts" or "tbl"/"tibble" for the output format of the nested lists}
 }
 \value{
 RData file
@@ -43,7 +46,9 @@ Should help researchers to work with the datasets and update the regularly. Allo
 \dontrun{
 tempf <- tempfile(fileext = ".RData"); outd <- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))
 temptxt <- tempfile(fileext = ".txt")
+
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
+
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 read.delim(temptxt,sep = ",")
 # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get
@@ -56,8 +61,10 @@ list.files(outd)
 # Then process all the downloaded files
 FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=outd,download=FALSE,
 download_only=FALSE,inputlist=inputlist)
-load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
+load(tempf); FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
+
 # Example 2: Download all non-daily files and process them
+
 # Commented out to not being tested
 # tempf2 <- tempfile(fileext = ".RData");
 # outd2<- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))

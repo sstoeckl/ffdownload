@@ -13,6 +13,7 @@
 #' @param listsave if not NULL, the list of unzipped files is saved here (good for processing only a limited number of files through inputlist).
 #' Is written before inputlist is processed.
 #' @param inputlist if not NULL, FFdownload tries to match the names from the list with the list of zip-files
+#' @param format (set to xts) specify "xts" or "tbl"/"tibble" for the output format of the nested lists
 #'
 #' @return RData file
 #'
@@ -20,7 +21,9 @@
 #' \dontrun{
 #' tempf <- tempfile(fileext = ".RData"); outd <- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
 #' temptxt <- tempfile(fileext = ".txt")
+#'
 #' # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
+#'
 #' FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 #' read.delim(temptxt,sep = ",")
 #' # set vector with only files to download (we try a fuzzyjoin, so "Momentum" should be enough to get
@@ -33,8 +36,10 @@
 #' # Then process all the downloaded files
 #' FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=outd,download=FALSE,
 #' download_only=FALSE,inputlist=inputlist)
-#' load(tempf); FFdownload$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
+#' load(tempf); FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
+#'
 #' # Example 2: Download all non-daily files and process them
+#'
 #' # Commented out to not being tested
 #' # tempf2 <- tempfile(fileext = ".RData");
 #' # outd2<- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
@@ -51,7 +56,7 @@
 #' @importFrom plyr mlply
 #'
 #' @export
-FFdownload <- function(output_file = "data.Rdata", tempd=NULL, exclude_daily=FALSE, download=TRUE, download_only=FALSE, listsave=NULL, inputlist=NULL) {
+FFdownload <- function(output_file = "data.Rdata", tempd=NULL, exclude_daily=FALSE, download=TRUE, download_only=FALSE, listsave=NULL, inputlist=NULL, format="xts") {
   message("Step 1: getting list of all the csv-zip-files!\n")
   URL <- "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html"
   pg <- xml2::read_html(URL)
@@ -116,7 +121,11 @@ FFdownload <- function(output_file = "data.Rdata", tempd=NULL, exclude_daily=FAL
     vars <- paste0("x_", gsub("(.*)\\..*", "\\1", csv_files2)  )
 
     message("Step 3: Start processing ",length(Flinks_final)," csv-files\n")
-    FFdata <- plyr::mlply(function(y) converter(y), .data=csv_files, .progress = "text")
+    if (format == "xts"){
+      FFdata <- plyr::mlply(function(y) converter(y), .data=csv_files, .progress = "text")
+    } else if (format %in% c("tbl","tibble")){
+      FFdata <- plyr::mlply(function(y) converter_tbl(y), .data=csv_files, .progress = "text")
+    }
     names(FFdata) <- vars
 
     # recombine lists
