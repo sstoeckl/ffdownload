@@ -159,7 +159,7 @@ FFfive %>%
 #> Warning: Removed 11 row(s) containing missing values (geom_path).
 ```
 
-![](vignettes/README-FFpic-1.png)<!-- -->
+![](man/figures/README-FFpic-1.png)<!-- -->
 
 # Acknowledgment
 
