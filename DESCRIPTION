@@ -8,7 +8,8 @@ Description: Downloads all the datasets (you can exclude the daily ones or speci
 Depends: R (>= 3.5.0), utils, stats, rvest, xts, xml2, zoo, plyr 
 Imports: timetk
 License: MIT + file LICENSE
-URL: https://github.com/sstoeckl/ffdownload
+URL: https://github.com/sstoeckl/ffdownload,
+    https://sstoeckl.github.io/ffdownload/
 BugReports: https://github.com/sstoeckl/ffdownload/issues
 Encoding: UTF-8
 RoxygenNote: 7.2.1

@@ -6,3 +6,7 @@
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 README-FFpic_1.png$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
