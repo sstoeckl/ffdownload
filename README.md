@@ -24,8 +24,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://sstoeckl.github.io/ffdownload/)
 <!-- badges: end -->
 
-`R` Code to download Datasets from [Kenneth French’s famous
-website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
+# `R` Code to download Datasets from [Kenneth French’s famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
 
 # Update
 

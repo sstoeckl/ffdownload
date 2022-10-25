@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 
-`R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
+# `R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
 
 # Update
 
