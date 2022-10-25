@@ -14,6 +14,10 @@ status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://tr
 status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)
+[![CRAN downloads last
+month](http://cranlogs.r-pkg.org/badges/FFdownload)](https://cran.r-project.org/package=FFdownload)
+[![CRAN downloads last
+week](http://cranlogs.r-pkg.org/badges/last-week/FFdownload)](https://cran.r-project.org/package=FFdownload)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Website -
