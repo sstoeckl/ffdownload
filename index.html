@@ -74,10 +74,13 @@
 </h1>
 </div>
 <!-- badges: start -->
+
 </div>
-<div class="section level1"><h1 id="r-code-to-download-datasets-from-kenneth-frenchs-famous-website">
+<div class="section level1">
+<h1 id="r-code-to-download-datasets-from-kenneth-frenchs-famous-website">
 <code>R</code> Code to download Datasets from <a href="http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" class="external-link">Kenneth French’s famous website</a>.<a class="anchor" aria-label="anchor" href="#r-code-to-download-datasets-from-kenneth-frenchs-famous-website"></a>
-</h1></div>
+</h1>
+</div>
 <div class="section level1">
 <h1 id="update">Update<a class="anchor" aria-label="anchor" href="#update"></a>
 </h1>
@@ -110,7 +113,9 @@
 <h3 id="example-1-monthly-files">Example 1: Monthly files<a class="anchor" aria-label="anchor" href="#example-1-monthly-files"></a>
 </h3>
 <p>In this example, we use <code>FFDwonload</code> to</p>
-<ol style="list-style-type: decimal"><li>get a list of all available monthly zip-files and save that files as <em>temp.txt</em>.</li></ol>
+<ol style="list-style-type: decimal">
+<li>get a list of all available monthly zip-files and save that files as <em>temp.txt</em>.</li>
+</ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sstoeckl/ffdownload" class="external-link">FFdownload</a></span><span class="op">)</span></span>
 <span><span class="va">temptxt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".txt"</span><span class="op">)</span></span>
@@ -128,12 +133,16 @@
 <span><span class="co">#&gt; 4 Emerging_Markets_4_Portfolios_BE-ME_OP_CSV.zip </span></span>
 <span><span class="co">#&gt; 5 Emerging_Markets_4_Portfolios_OP_INV_CSV.zip   </span></span>
 <span><span class="co">#&gt; 6 Emerging_Markets_4_Portfolios_BE-ME_INV_CSV.zip</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal"><li>Next, after inspecting the list we specify a vector <code>inputlist</code> to only download the datasets we actually need.</li></ol>
+<ol start="2" style="list-style-type: decimal">
+<li>Next, after inspecting the list we specify a vector <code>inputlist</code> to only download the datasets we actually need.</li>
+</ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tempd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">inputlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>,<span class="st">"F-F_Momentum_Factor"</span>,<span class="st">"F-F_ST_Reversal_Factor"</span>,<span class="st">"F-F_LT_Reversal_Factor"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>,tempd<span class="op">=</span><span class="va">tempd</span>,download<span class="op">=</span><span class="cn">TRUE</span>,download_only<span class="op">=</span><span class="cn">TRUE</span>,inputlist<span class="op">=</span><span class="va">inputlist</span><span class="op">)</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal"><li>In the final step we process the downloaded files (formatting the output data.frames as tibbles for direct proceeding):</li></ol>
+<ol start="3" style="list-style-type: decimal">
+<li>In the final step we process the downloaded files (formatting the output data.frames as tibbles for direct proceeding):</li>
+</ol>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tempf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">tempd</span>,<span class="st">"\\FFdata.RData"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -141,7 +150,9 @@
 <span><span class="fu"><a href="reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>output_file <span class="op">=</span> <span class="va">tempf</span>, exclude_daily<span class="op">=</span><span class="cn">TRUE</span>,tempd<span class="op">=</span><span class="va">tempd</span>,download<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>           download_only<span class="op">=</span><span class="cn">FALSE</span>,inputlist <span class="op">=</span> <span class="va">inputlist</span>, format<span class="op">=</span><span class="st">"tbl"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%</span></span></code></pre></div>
-<ol start="4" style="list-style-type: decimal"><li>Then we check that everything worked and output a combined file of monthly factors (only show first 5 rows).</li></ol>
+<ol start="4" style="list-style-type: decimal">
+<li>Then we check that everything worked and output a combined file of monthly factors (only show first 5 rows).</li>
+</ol>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/business-science/timetk" class="external-link">timetk</a></span><span class="op">)</span></span>
@@ -159,7 +170,9 @@
 <span><span class="co">#&gt; 4 Okt 1926   -3.24 -0.09  0.7   0.32    NA     NA  -2.11</span></span>
 <span><span class="co">#&gt; 5 Nov 1926    2.53 -0.1  -0.51  0.31    NA     NA   1   </span></span>
 <span><span class="co">#&gt; 6 Dez 1926    2.62 -0.03 -0.05  0.28    NA     NA   2.01</span></span></code></pre></div>
-<ol start="5" style="list-style-type: decimal"><li>No we do the same with annual data:</li></ol>
+<ol start="5" style="list-style-type: decimal">
+<li>No we do the same with annual data:</li>
+</ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FFfive</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">annual</span><span class="op">$</span><span class="va">`annual_factors:_january-december`</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">annual</span><span class="op">$</span><span class="va">`january-december`</span> ,by<span class="op">=</span><span class="st">"date"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -175,7 +188,9 @@
 <span><span class="co">#&gt; 4 Dez 1930  -31.2   -5.17 -11.5   2.41  25.7  NA     -0.86</span></span>
 <span><span class="co">#&gt; 5 Dez 1931  -45.1    3.7  -14.0   1.07  23.8  -3.24  24.2 </span></span>
 <span><span class="co">#&gt; 6 Dez 1932   -9.39   4.4   11.1   0.96 -21.8   9.27  30.5</span></span></code></pre></div>
-<ol start="6" style="list-style-type: decimal"><li>Finally we plot wealth indices for 6 of these factors:</li></ol>
+<ol start="6" style="list-style-type: decimal">
+<li>Finally we plot wealth indices for 6 of these factors:</li>
+</ol>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FFfive</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="va">Mkt.RF</span><span class="op">:</span><span class="va">ST_Rev</span>,names_to<span class="op">=</span><span class="st">"FFVar"</span>,values_to<span class="op">=</span><span class="st">"FFret"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>FFret<span class="op">=</span><span class="va">FFret</span><span class="op">/</span><span class="fl">100</span>,date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
