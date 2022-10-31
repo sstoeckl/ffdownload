@@ -1,0 +1,74 @@
+---
+title: "How-to in the Tidyverse"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How-to in the Tidyverse}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+```{r setup, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(FFdownload)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+outd <- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
+outfile <- paste0(outd,"FFData_xts.RData")
+```
+```{r setup2, eval=FALSE, echo=TRUE}
+library(FFdownload)
+library(tidyverse)
+outd <- paste0("data/",format(Sys.time(), "%F_%H-%M"))
+outfile <- paste0(outd,"FFData_xts.RData")
+```
+
+For a detailed how-to on checking the available data sets, as well as downloading and processing the data in separate steps, please check the `vignette("FFD-how-to-xts")`. In the following we download and process the selected files all in one step. Note, that here we purposefully set the "format" to _tibble_.
+
+```{r tbl_all}
+inputlist <- c("F-F_Research_Data_Factors_CSV","F-F_Momentum_Factor_CSV")
+FFdownload(exclude_daily=TRUE, tempd=outd, download=TRUE, download_only=FALSE, inputlist=inputlist, output_file = outfile, format = "tibble")
+```
+
+Now, we laod the file and check the structure of the created list (after loading into the current workspace).
+
+```{r tbl_load}
+load(outfile)
+ls.str(FFdata)
+```
+
+To make sure, we have actually created a list of tibbles, we check:
+
+```{r tbl_check}
+str(FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2)
+```
+
+In a next step we merge the two data sets. I believe there is an efficient way to join the data automatically, if you know it please email me!
+
+```{r tbl_merge}
+FFfour <- FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% 
+  left_join(FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2 ,by="date") 
+FFfour %>% head()
+```
+
+6.  Finally we plot wealth indices for 6 of these factors. For this, we first `pivot_longer()` to create a tidy data.frame, before we `filter()` the data to start in 1960 and delete the risk-free rate. Next we calculate a wealth index and plot using `ggplot()`. Be aware, that the y-axis is set to a log-scale using `scale_y_log10()`.
+
+```{r FFFourPic, out.width="100%", fig.width=8, fig.height=4}
+FFfour %>% 
+  pivot_longer(Mkt.RF:Mom,names_to="FFVar",values_to="FFret") %>% 
+  mutate(FFret=FFret/100,date=as.Date(date)) %>% # divide returns by 100
+  filter(date>="1960-01-01",!FFVar=="RF") %>% group_by(FFVar) %>% 
+  arrange(FFVar,date) %>%
+  mutate(FFret=ifelse(date=="1960-01-01",1,FFret),FFretv=cumprod(1+FFret)-1) %>% 
+  ggplot(aes(x=date,y=FFretv,col=FFVar,type=FFVar)) + geom_line(lwd=1.2) + scale_y_log10() +
+  labs(title="FF5 Factors plus Momentum", subtitle="Cumulative wealth plots",ylab="cum. returns") + 
+  scale_colour_viridis_d("FFvar") +
+  theme_bw() + theme(legend.position="bottom")
+```
