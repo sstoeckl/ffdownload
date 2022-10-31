@@ -165,7 +165,7 @@ caluclate monthly returns and finally plot the resulting
 <span><span class="va">monthly_1960</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">monthly</span><span class="op">)</span><span class="op">[</span><span class="st">"1963/"</span><span class="op">]</span></span>
 <span><span class="va">monthly_returns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumprod</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">monthly_1960</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">monthly_returns</span><span class="op">)</span></span></code></pre></div>
-<p><img src="FFD-xts-how-to_files/figure-html/xts_process2-1.png" width="100%"></p>
+<p><img src="VIGNETTE-xts_process2-1.png" width="100%"></p>
   </main>
 </div>
 
