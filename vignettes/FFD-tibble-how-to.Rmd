@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "VIGNETTE-"
 )
 ```
 
@@ -37,7 +37,7 @@ inputlist <- c("F-F_Research_Data_Factors_CSV","F-F_Momentum_Factor_CSV")
 FFdownload(exclude_daily=TRUE, tempd=outd, download=TRUE, download_only=FALSE, inputlist=inputlist, output_file = outfile, format = "tibble")
 ```
 
-Now, we laod the file and check the structure of the created list (after loading into the current workspace).
+Now, we load the file and check the structure of the created list (after loading into the current workspace).
 
 ```{r tbl_load}
 load(outfile)
