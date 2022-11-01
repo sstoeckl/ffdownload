@@ -12,3 +12,4 @@ README-FFpic_1.png$
 ^\.github$
 ^CRAN-SUBMISSION$
 assetpricing.Rmd
+^LICENSE\.md$
