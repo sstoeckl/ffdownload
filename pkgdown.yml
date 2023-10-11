@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   FFD-tibble-how-to: FFD-tibble-how-to.html
   FFD-xts-how-to: FFD-xts-how-to.html
-last_built: 2023-10-11T11:49Z
+last_built: 2023-10-11T11:55Z
 urls:
   reference: https://sstoeckl.github.io/ffdownload/reference
   article: https://sstoeckl.github.io/ffdownload/articles
