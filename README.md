@@ -7,8 +7,7 @@
 
 [![Project
 Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Travis build
-status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
+
 [![CRAN_latest_release_date](https://www.r-pkg.org/badges/last-release/FFdownload)](https://cran.r-project.org/package=FFdownload)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
@@ -28,8 +27,7 @@ pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.
 
 # Update
 
-With version 1.1.0 we have added the possibility to format the data sets
-saved in the list as `tibble` for direct proceeding.
+Version 1.1.1 corrects a small error for publication on CRAN.
 
 ## Motivation
 
@@ -104,7 +102,7 @@ FFdownload(exclude_daily=TRUE,tempd=tempd,download=TRUE,download_only=TRUE,input
 ``` r
 tempf <- paste0(tempd,"\\FFdata.RData")
 getwd()
-#> [1] "D:/OneDrive - University of Liechtenstein/ROOT/Packages/ffdownload"
+#> [1] "/home/sstoeckl/Packages/ffdownload"
 FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
            download_only=FALSE,inputlist = inputlist, format="tbl")
 #>   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%
@@ -127,9 +125,9 @@ FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>%
 #> 1 Jul 1926    2.96 -2.56 -2.43  0.22    NA     NA  -1.87
 #> 2 Aug 1926    2.64 -1.17  3.82  0.25    NA     NA   1.43
 #> 3 Sep 1926    0.36 -1.4   0.13  0.23    NA     NA  -0.17
-#> 4 Okt 1926   -3.24 -0.09  0.7   0.32    NA     NA  -2.11
+#> 4 Oct 1926   -3.24 -0.09  0.7   0.32    NA     NA  -2.11
 #> 5 Nov 1926    2.53 -0.1  -0.51  0.31    NA     NA   1   
-#> 6 Dez 1926    2.62 -0.03 -0.05  0.28    NA     NA   2.01
+#> 6 Dec 1926    2.62 -0.03 -0.05  0.28    NA     NA   2.01
 ```
 
 5.  No we do the same with annual data:
@@ -143,12 +141,12 @@ FFfive %>% head()
 #> # A tibble: 6 × 8
 #>   date      Mkt.RF    SMB    HML    RF   Mom LT_Rev ST_Rev
 #>   <yearmon>  <dbl>  <dbl>  <dbl> <dbl> <dbl>  <dbl>  <dbl>
-#> 1 Dez 1927   29.5   -2.04  -4.54  3.12  24.1  NA    -17.7 
-#> 2 Dez 1928   35.4    4.51  -6.17  3.56  29.1  NA    -10.8 
-#> 3 Dez 1929  -19.5  -30.7   11.7   4.75  21.1  NA    -15.0 
-#> 4 Dez 1930  -31.2   -5.17 -11.5   2.41  25.7  NA     -0.86
-#> 5 Dez 1931  -45.1    3.7  -14.0   1.07  23.8  -3.24  24.2 
-#> 6 Dez 1932   -9.39   4.4   11.1   0.96 -21.8   9.27  30.5
+#> 1 Dec 1927   29.5   -2.04  -4.54  3.12  24.1  NA    -17.7 
+#> 2 Dec 1928   35.4    4.51  -6.17  3.56  29.1  NA    -10.8 
+#> 3 Dec 1929  -19.5  -30.7   11.7   4.75  21.1  NA    -15.0 
+#> 4 Dec 1930  -31.2   -5.17 -11.5   2.41  25.7  NA     -0.86
+#> 5 Dec 1931  -45.1    3.7  -14.0   1.07  23.8  -3.24  24.2 
+#> 6 Dec 1932   -9.39   4.4   11.1   0.96 -21.8   9.27  30.5
 ```
 
 6.  Finally we plot wealth indices for 6 of these factors:
@@ -162,9 +160,9 @@ FFfive %>%
   labs(title="FF5 Factors plus Momentum", subtitle="Cumulative wealth plots",ylab="cum. returns") + 
   scale_colour_viridis_d("FFvar") +
   theme_bw() + theme(legend.position="bottom")
-#> Warning in self$trans$transform(x): NaNs wurden erzeugt
+#> Warning in self$trans$transform(x): NaNs produced
 #> Warning: Transformation introduced infinite values in continuous y-axis
-#> Warning: Removed 11 row(s) containing missing values (geom_path).
+#> Warning: Removed 11 rows containing missing values (`geom_line()`).
 ```
 
 ![](vignettes/README-FFpic-1.png)<!-- -->

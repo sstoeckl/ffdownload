@@ -1,16 +1,15 @@
 ## Resubmission
-This is a resubmission. In this version I have:
+This is a resubmission to a previously archived version. In this version I have:
 
-* corrected some errors with downloading and renamed a directory variable that was the same as the command belonging to it.
-* Fix too long line
+* deleted a non-working link
   
 ## Test environments
-* local R installation, R 4.0.2
-* ubuntu 16.04 (on travis-ci), R 4.0.2
+* local R installation, R 4.3.1
+* ubuntu 16.04 (on travis-ci), R 4.3.1
 * win-builder (devel)
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 1 warnings | 0 note
 
 * This is a new release.

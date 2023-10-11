@@ -1,7 +1,7 @@
 Package: FFdownload
 Type: Package
 Title: Download Data from Kenneth French's Website
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(person("Sebastian", "Stoeckl", email = "sebastian.stoeckl@uni.li", role = c("aut","cre"), comment = c(ORCID = "0000-0002-4196-6093", "Package commissioner and maintainer.")),
             person("Annar", "Massimov", email = "", role = c("ctb"), comment = "Original developer of FFdownload."))
 Description: Downloads all the datasets (you can exclude the daily ones or specify a list of those you are targeting specifically) from Kenneth French's Website at <https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html>, process them and convert them to list of 'xts' (time series).
