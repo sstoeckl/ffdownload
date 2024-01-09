@@ -30,7 +30,7 @@ outd <- paste0("data/",format(Sys.time(), "%F_%H-%M"))
 outfile <- paste0(outd,"FFData_xts.RData")
 ```
 
-For a detailed how-to on checking the available data sets, as well as downloading and processing the data in separate steps, please check the `vignette("FFD-how-to-xts")`. In the following we download and process the selected files all in one step. Note, that here we purposefully set the "format" to _tibble_.
+For a detailed how-to on checking the available data sets, as well as downloading and processing the data in separate steps, please check the `vignette("FFD-xts-how-to")`. In the following we download and process the selected files all in one step. Note, that here we purposefully set the "format" to _tibble_.
 
 ```{r tbl_all}
 inputlist <- c("F-F_Research_Data_Factors_CSV","F-F_Momentum_Factor_CSV")
