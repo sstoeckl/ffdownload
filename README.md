@@ -61,6 +61,31 @@ devtools::install_github("sstoeckl/FFdownload")
 
 ## Examples
 
+### Example 0: Easy Access
+
+This is the quick-starter example. It just retrieves the data and
+provides it for easy usage!
+
+``` r
+library(FFdownload)
+library(tidyverse)
+FFdownload(inputlist = c("F-F_Research_Data_5_Factors_2x3"), output_file = "FFdata.RData", format = "tbl")
+#>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
+load("FFdata.RData")
+FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2 |>
+  tidyr::pivot_longer(cols = -date, names_to = "FFFactors", values_to = "Value") |> 
+  group_by(FFFactors) |> mutate(Price=cumprod(1+Value/100)) |>
+  ggplot2::ggplot(aes(x = date, col = FFFactors, y = Price)) + geom_line(lwd=1.2) +
+  theme_bw() + theme(legend.position="bottom")
+#> Warning: The `trans` argument of `continuous_scale()` is deprecated as of ggplot2 3.5.0.
+#> ℹ Please use the `transform` argument instead.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+```
+
+![](vignettes/README-example%200-1.png)<!-- -->
+
 ### Example 1: Monthly files
 
 In this example, we use `FFDwonload` to
@@ -69,7 +94,6 @@ In this example, we use `FFDwonload` to
     *temp.txt*.
 
 ``` r
-library(FFdownload)
 temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
@@ -114,7 +138,6 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
     monthly factors (only show first 5 rows).
 
 ``` r
-library(tidyverse)
 library(timetk)
 load(file = tempf)
 FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% 
@@ -162,9 +185,10 @@ FFfive %>%
   labs(title="FF5 Factors plus Momentum", subtitle="Cumulative wealth plots",ylab="cum. returns") + 
   scale_colour_viridis_d("FFvar") +
   theme_bw() + theme(legend.position="bottom")
-#> Warning in self$trans$transform(x): NaNs wurden erzeugt
-#> Warning: Transformation introduced infinite values in continuous y-axis
-#> Warning: Removed 11 row(s) containing missing values (geom_path).
+#> Warning in transformation$transform(x): NaNs wurden erzeugt
+#> Warning in scale_y_log10(): log-10 transformation introduced infinite values.
+#> Warning: Removed 11 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
 ```
 
 ![](vignettes/README-FFpic-1.png)<!-- -->

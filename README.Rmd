@@ -55,6 +55,22 @@ devtools::install_github("sstoeckl/FFdownload")
 
 ## Examples
 
+### Example 0: Easy Access
+
+This is the quick-starter example. It just retrieves the data and provides it for easy usage!
+
+```{r example 0, eval=TRUE, message=FALSE}
+library(FFdownload)
+library(tidyverse)
+FFdownload(inputlist = c("F-F_Research_Data_5_Factors_2x3"), output_file = "FFdata.RData", format = "tbl")
+load("FFdata.RData")
+FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2 |>
+  tidyr::pivot_longer(cols = -date, names_to = "FFFactors", values_to = "Value") |> 
+  group_by(FFFactors) |> mutate(Price=cumprod(1+Value/100)) |>
+  ggplot2::ggplot(aes(x = date, col = FFFactors, y = Price)) + geom_line(lwd=1.2) +
+  theme_bw() + theme(legend.position="bottom")
+```
+
 ### Example 1: Monthly files
 
 In this example, we use `FFDwonload` to 
@@ -62,7 +78,6 @@ In this example, we use `FFDwonload` to
 1.  get a list of all available monthly zip-files and save that files as *temp.txt*.
 
 ```{r example 1a, eval=TRUE, message=FALSE}
-library(FFdownload)
 temptxt <- tempfile(fileext = ".txt")
 # Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
@@ -93,7 +108,6 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
 4. Then we check that everything worked and output a combined file of monthly factors (only show first 5 rows).
 
 ```{r example 3b, message=FALSE}
-library(tidyverse)
 library(timetk)
 load(file = tempf)
 FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% 
