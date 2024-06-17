@@ -1,3 +1,7 @@
+# FFdownload 1.1.1
+
+* Release to CRAN after previous package version has been archived due to a broken travis link.
+
 # FFdownload 1.1
 
 * Resubmit to CRAN

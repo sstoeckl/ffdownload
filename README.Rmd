@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
   [![Project Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-  [![Travis build status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
+
   [![CRAN_latest_release_date](https://www.r-pkg.org/badges/last-release/FFdownload)](https://cran.r-project.org/package=FFdownload)
   [![CRAN status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
   [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)](https://cranlogs.r-pkg.org/badges/grand-total/FFdownload)
@@ -26,12 +26,11 @@ knitr::opts_chunk$set(
   [![Website - pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://sstoeckl.github.io/ffdownload/)
 <!-- badges: end -->
 
-
 # `R` Code to download Datasets from [Kenneth French's famous website](http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
 
 # Update
 
-With version 1.1.0 we have added the possibility to format the data sets saved in the list as `tibble` for direct proceeding.
+Version 1.1.1 corrects a small error for publication on CRAN.
 
 ## Motivation
 

@@ -7,8 +7,7 @@
 
 [![Project
 Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Travis build
-status](https://travis-ci.org/sstoeckl/ffdownload.svg?branch=master)](https://travis-ci.org/sstoeckl/ffdownload)
+
 [![CRAN_latest_release_date](https://www.r-pkg.org/badges/last-release/FFdownload)](https://cran.r-project.org/package=FFdownload)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
@@ -28,8 +27,7 @@ pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.
 
 # Update
 
-With version 1.1.0 we have added the possibility to format the data sets
-saved in the list as `tibble` for direct proceeding.
+Version 1.1.1 corrects a small error for publication on CRAN.
 
 ## Motivation
 
