@@ -24,6 +24,7 @@ outd <- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
 outfile <- paste0(outd,"FFData_xts.RData")
 listfile <- paste0(outd,"FFList.txt")
 ```
+
 ```{r setup2, eval=FALSE, echo=TRUE}
 library(FFdownload)
 outd <- paste0("data/",format(Sys.time(), "%F_%H-%M"))
@@ -40,8 +41,8 @@ read.delim(listfile,sep = ",")[c(1:4,73:74),]
 
 From this list we select the files to download. In our case we use the 3 Fama-French-Factors:
 
-*  "F-F_Research_Data_Factors_CSV"
-*  "F-F_Momentum_Factor_CSV"
+-   "F-F_Research_Data_Factors_CSV"
+-   "F-F_Momentum_Factor_CSV"
 
 and download these files without processing them (for the sake of showing how the package works).
 
@@ -51,7 +52,7 @@ FFdownload(exclude_daily=TRUE, tempd=outd, download=TRUE, download_only=TRUE, in
 list.files(outd)
 ```
 
-Now we process these downloaded files and create a final "RData" file with a certain list structure from it. Due to the separation of the downloading and processing stage this can be done repeatedly for any data set saved at a certain point in time in a relevant folder. 
+Now we process these downloaded files and create a final "RData" file with a certain list structure from it. Due to the separation of the downloading and processing stage this can be done repeatedly for any data set saved at a certain point in time in a relevant folder.
 
 ```{r xts_processing}
 FFdownload(exclude_daily=TRUE, tempd=outd, download=FALSE, download_only=FALSE, inputlist=inputlist, output_file = outfile)
@@ -72,6 +73,7 @@ monthly_1960 <- na.omit(monthly)["1963/"]
 monthly_returns <- cumprod(1 + monthly_1960/100) - 1
 plot(monthly_returns)
 ```
+
 ```{r xts_process2, eval=TRUE, echo=FALSE, out.width="100%", fig.width=8, fig.height=4}
 monthly <- do.call(merge, lapply(FFdata, function(i) i$monthly$Temp2))
 monthly_1960 <- na.omit(monthly)["1963/"]
