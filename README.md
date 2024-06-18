@@ -7,7 +7,7 @@
 
 [![Project
 Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-
+[![R-CMD-check](https://github.com/sstoeckl/ffdownload/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sstoeckl/ffdownload/actions/workflows/R-CMD-check.yaml)
 [![CRAN_latest_release_date](https://www.r-pkg.org/badges/last-release/FFdownload)](https://cran.r-project.org/package=FFdownload)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FFdownload)](https://CRAN.R-project.org/package=FFdownload)
