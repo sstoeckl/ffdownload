@@ -2,9 +2,10 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
+  assetpricing: assetpricing.html
   FFD-tibble-how-to: FFD-tibble-how-to.html
   FFD-xts-how-to: FFD-xts-how-to.html
-last_built: 2024-06-18T07:31Z
+last_built: 2024-06-18T10:37Z
 urls:
   reference: https://sstoeckl.github.io/ffdownload/reference
   article: https://sstoeckl.github.io/ffdownload/articles
