@@ -58,7 +58,7 @@ devtools::install_github("sstoeckl/FFdownload")
 
 This is the quick-starter example. It just retrieves the data and provides it for easy usage!
 
-```{r example 0, eval=TRUE, message=FALSE}
+```{r example_0, eval=TRUE, message=FALSE}
 library(FFdownload)
 library(tidyverse)
 FFdownload(inputlist = c("F-F_Research_Data_5_Factors_2x3"), output_file = "FFdata.RData", format = "tbl")
@@ -76,20 +76,20 @@ In this example, we use `FFDwonload` to
 
 1.  get a list of all available monthly zip-files and save that files as *temp.txt*.
 
-```{r example 1a, eval=TRUE, message=FALSE}
+```{r example_1a, eval=TRUE, message=FALSE}
 temptxt <- tempfile(fileext = ".txt")
-# Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
+# example_1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 ```
 
-```{r example 1b, message=FALSE, warning=FALSE}
+```{r example_1b, message=FALSE, warning=FALSE}
 FFlist <- readr::read_csv(temptxt) %>% dplyr::select(2) %>% dplyr::rename(Files=x)
 FFlist %>% dplyr::slice(1:3,(dplyr::n()-2):dplyr::n())
 ```
 
 2.  Next, after inspecting the list we specify a vector `inputlist` to only download the datasets we actually need.
 
-```{r example 2, message=FALSE, warning=FALSE}
+```{r example_2, message=FALSE, warning=FALSE}
 tempd <- tempdir()
 inputlist <- c("F-F_Research_Data_Factors","F-F_Momentum_Factor","F-F_ST_Reversal_Factor","F-F_LT_Reversal_Factor")
 FFdownload(exclude_daily=TRUE,tempd=tempd,download=TRUE,download_only=TRUE,inputlist=inputlist)
@@ -97,7 +97,7 @@ FFdownload(exclude_daily=TRUE,tempd=tempd,download=TRUE,download_only=TRUE,input
 
 3.  In the final step we process the downloaded files (formatting the output data.frames as tibbles for direct proceeding):
 
-```{r example 3a, message=FALSE}
+```{r example_3a, message=FALSE}
 tempf <- paste0(tempd,"\\FFdata.RData")
 getwd()
 FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
@@ -106,7 +106,7 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=tempd,download=FALSE,
 
 4. Then we check that everything worked and output a combined file of monthly factors (only show first 5 rows).
 
-```{r example 3b, message=FALSE}
+```{r example_3b, message=FALSE}
 library(timetk)
 load(file = tempf)
 FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>% 
@@ -117,7 +117,7 @@ FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2 %>%
 
 5. No we do the same with annual data:
 
-```{r example 3c, message=FALSE}
+```{r example_3c, message=FALSE}
 FFfive <- FFdata$`x_F-F_Research_Data_Factors`$annual$`annual_factors:_january-december` %>% 
   left_join(FFdata$`x_F-F_Momentum_Factor`$annual$`january-december` ,by="date") %>%
   left_join(FFdata$`x_F-F_LT_Reversal_Factor`$annual$`january-december`,by="date") %>%

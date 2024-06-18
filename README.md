@@ -82,7 +82,7 @@ FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2 |>
 #> generated.
 ```
 
-![](vignettes/README-example%200-1.png)<!-- -->
+![](vignettes/README-example_0-1.png)<!-- -->
 
 ### Example 1: Monthly files
 
@@ -93,7 +93,7 @@ In this example, we use `FFDwonload` to
 
 ``` r
 temptxt <- tempfile(fileext = ".txt")
-# Example 1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
+# example_1: Use FFdownload to get a list of all monthly zip-files. Save that list as temptxt.
 FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=temptxt)
 ```
 
