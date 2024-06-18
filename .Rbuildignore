@@ -11,5 +11,5 @@ README-FFpic_1.png$
 ^pkgdown$
 ^\.github$
 ^CRAN-SUBMISSION$
-assetpricing.Rmd
+vignettes/assetpricing.Rmd
 ^LICENSE\.md$
