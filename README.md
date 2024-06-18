@@ -82,7 +82,7 @@ FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2 |>
 #> generated.
 ```
 
-![](vignettes/README-example_0-1.png)<!-- -->
+![](man/figures/README-example_0-1.png)<!-- -->
 
 ### Example 1: Monthly files
 
@@ -189,7 +189,7 @@ FFfive %>%
 #> (`geom_line()`).
 ```
 
-![](vignettes/README-FFpic-1.png)<!-- -->
+![](man/figures/README-FFpic-1.png)<!-- -->
 
 # Acknowledgment
 
