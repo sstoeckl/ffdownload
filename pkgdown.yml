@@ -5,7 +5,7 @@ articles:
   assetpricing: assetpricing.html
   FFD-tibble-how-to: FFD-tibble-how-to.html
   FFD-xts-how-to: FFD-xts-how-to.html
-last_built: 2025-09-10T20:26Z
+last_built: 2025-09-10T20:30Z
 urls:
-  reference: https://sstoeckl.github.io/ffdownload/reference
-  article: https://sstoeckl.github.io/ffdownload/articles
+  reference: https://www.sebastianstoeckl.com/ffdownload/reference
+  article: https://www.sebastianstoeckl.com/ffdownload/articles
