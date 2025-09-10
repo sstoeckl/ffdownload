@@ -1,4 +1,7 @@
-url: https://sstoeckl.github.io/ffdownload/
+url: https://www.sebastianstoeckl.com/ffdownload/
 template:
   bootstrap: 5
+  bootswatch: spacelab
+navbar:
+  bg: primary
 

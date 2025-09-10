@@ -139,7 +139,13 @@ FFfive %>%
 
 ```
 
+### Author/License
 
-# Acknowledgment
+- **Sebastian Stöckl** - Package Creator, Modifier & Maintainer - [sstoeckl on github](https://github.com/sstoeckl) and [academic website](https://www.sebastianstoeckl.com)
+
+This project is licensed under the MIT License - see the
+license.md file for details.
+
+### Acknowledgment
 
 I am grateful to **Kenneth French** for providing all this great research data on his website! Our lives would be so much harder without this *boost* for productivity. I am also grateful for the kind conversation with Kenneth with regard to this package: He appreciates my work on this package giving others easier access to his data sets!
