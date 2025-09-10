@@ -1,11 +1,19 @@
+citHeader("To cite {FFdownload} in publications, please use:")
+
 bibentry(
-  bibtype  = "Article",
-  title    = ,
-  author   = ,
-  journal  = ,
-  year     = ,
-  volume   = ,
-  number   = ,
-  pages    = ,
-  doi      =
+  bibtype = "Manual",
+  title   = "FFdownload: Download Data from Kenneth French's Website",
+  author  = person(
+    given = "Sebastian",
+    family = "Stoeckl",
+    role = c("aut", "cre"),
+    email = "sebastian.stoeckl@uni.li",
+    comment = c(ORCID = "0000-0002-4196-6093")
+  ),
+  year    = "2025",
+  note    = "R package version 1.1.1",
+  url     = "https://CRAN.R-project.org/package=FFdownload",
+  doi     = "10.32614/CRAN.package.FFdownload"
 )
+
+citFooter("Please cite the package version you used in your analysis.")
