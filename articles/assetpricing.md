@@ -1,0 +1,76 @@
+# Cross-Sectional Asset Pricing Example
+
+``` r
+library(FFdownload)
+library(tidyverse)
+outd <- paste0("data/",format(Sys.time(), "%F_%H-%M"))
+outfile <- paste0(outd,"FFData_xts.RData")
+```
+
+For a detailed how-to on checking the available data sets, as well as
+downloading and processing the data in separate steps, please check the
+`vignette("FFD-how-to-xts")`. In the following we download and process
+the selected files all in one step. Note, that here we purposefully set
+the “format” to *tibble*.
+
+``` r
+inputlist <- c("25_Portfolios_5x5_CSV","F-F_Research_Data_Factors_CSV","F-F_Momentum_Factor_CSV")
+FFdownload(exclude_daily=TRUE, tempd=outd, download=TRUE, download_only=FALSE, inputlist=inputlist, output_file = outfile, format = "tibble")
+```
+
+``` r
+load(outfile)
+ls.str(FFdata)
+```
+
+``` r
+FFdata$x_25_Portfolios_5x5$monthly$`for_portfolios_formed_in_june_of_year_tvalue_weight_average_of_be/me_calculated_for_june_of_t_to_june_of_t+1_as:sum[me(mth)_*_be(fiscal_year_t-1)_/_me(dec_t-1)]_/_sum[me(mth)]where_mth_is_a_month_from_june_of_t_to_june_of_t+1and_be(fiscal_year_t-1)_is_adjusted_for_net_stock_issuance_to_dec_t-1`
+```
+
+``` r
+out2 <- FFdata$x_25_Portfolios_5x5$monthly %>% map(.f = ~pivot_longer(.x, 2:26, names_to = "PFs", values_to = "val"))
+```
+
+``` r
+data_final <- out2$average_value_weighted_returns %>% rename(ret_vw=val) %>% 
+  left_join(out2$average_equal_weighted_returns %>% rename(ret_ew=val),by=c("date","PFs")) %>% 
+  left_join(out2$number_of_firms_in_portfolios %>% rename(no=val),by=c("date","PFs")) %>% 
+  left_join(out2$average_market_cap %>% rename(market_cap=val),by=c("date","PFs")) %>% 
+  left_join(FFdata$`x_F-F_Research_Data_Factors`$monthly$Temp2,by=c("date")) %>%
+  left_join(FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2,by=c("date"))
+```
+
+``` r
+data_final2 <- data_final %>% mutate(ret_vw=ret_vw-RF,ret_ew=ret_ew-RF) %>% 
+```
+
+``` r
+estimate_model <- function(data, formula, min_obs = 1) {
+  if (nrow(data) < min_obs) {
+    betas <- rep(as.numeric(NA),length(regvars))
+  } else {
+    fit <- lm(formula, data = data)
+    betas <- as.numeric(coefficients(fit)[-1])
+  }
+  names(betas) <- all.vars(as.formula(formula))[-1]
+  return(betas)
+}
+roll_estimation <- function(data, formula, months, min_obs) {
+  data <- data |>
+    arrange(date)
+
+  betas <- slide_period_vec(
+    .x = data,
+    .i = as.Date(data$date),
+    .period = "month",
+    .f = ~ estimate_model(., formula=formula, min_obs=min_obs),
+    .before = months - 1,
+    .complete = FALSE
+  )
+
+  return(tibble(
+    month = unique(data$month),
+    beta = betas
+  ))
+}
+```
