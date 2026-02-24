@@ -575,10 +575,10 @@ all_terms <- c("Intercept","Mkt.RF","SMB","HML","Mom","RMW","CMA")
 
 fmt_col <- function(res, model_name) {
   res |>
-    mutate(cell = sprintf("%.3f%s\n(%.2f)", lambda, signif, t_stat)) |>
+    mutate(cell = sprintf("%.3f%s (%.2f)", lambda, signif, t_stat)) |>
     select(term, cell) |>
     right_join(tibble(term = all_terms), by = "term") |>
-    mutate(cell = replace_na(cell, "—")) |>
+    mutate(cell = replace_na(cell, "\u2014")) |>
     rename(!!model_name := cell)
 }
 
@@ -590,40 +590,24 @@ fmb_table <- fmt_col(res_capm, "CAPM") |>
 
 knitr::kable(fmb_table, align = "lcccc",
              caption = paste(
-               "Fama-MacBeth Results — 100 Size×BM Portfolios.",
-               "Entries: lambda estimate (significance) and (NW t-stat).",
+               "Fama-MacBeth Results — 100 Size x BM Portfolios.",
+               "Entries: lambda estimate (significance stars) (NW t-stat).",
                "*, **, *** = |t| > 1.96, 2.58, 3.29."))
 ```
 
-| Factor    |    CAPM     |  FF3  |  FF4   |     FF5     |
-|:----------|:-----------:|:-----:|:------:|:-----------:|
-| Intercept | 1.319\*\*\* |       |        |             |
-| (3.73)    | 1.033\*\*\* |       |        |             |
-| (4.41)    | 1.033\*\*\* |       |        |             |
-| (4.43)    | 0.956\*\*\* |       |        |             |
-| (3.86)    |             |       |        |             |
-| Mkt.RF    |   -0.488    |       |        |             |
-| (-1.21)   |   -0.319    |       |        |             |
-| (-1.27)   |   -0.318    |       |        |             |
-| (-1.27)   |   -0.256    |       |        |             |
-| (-0.97)   |             |       |        |             |
-| SMB       |      —      | 0.025 |        |             |
-| (0.19)    |    0.025    |       |        |             |
-| (0.19)    |    0.115    |       |        |             |
-| (0.91)    |             |       |        |             |
-| HML       |      —      | 0.265 |        |             |
-| (1.94)    |    0.265    |       |        |             |
-| (1.94)    |    0.226    |       |        |             |
-| (1.68)    |             |       |        |             |
-| Mom       |      —      |   —   | -0.013 |             |
-| (-0.04)   |      —      |       |        |             |
-| RMW       |      —      |   —   |   —    | 0.494\*\*\* |
-| (3.62)    |             |       |        |             |
-| CMA       |      —      |   —   |   —    |    0.083    |
-| (0.62)    |             |       |        |             |
+| Factor    |        CAPM        |        FF3         |        FF4         |        FF5         |
+|:----------|:------------------:|:------------------:|:------------------:|:------------------:|
+| Intercept | 1.319\*\*\* (3.73) | 1.033\*\*\* (4.41) | 1.033\*\*\* (4.43) | 0.956\*\*\* (3.86) |
+| Mkt.RF    |   -0.488 (-1.21)   |   -0.319 (-1.27)   |   -0.318 (-1.27)   |   -0.256 (-0.97)   |
+| SMB       |         —          |    0.025 (0.19)    |    0.025 (0.19)    |    0.115 (0.91)    |
+| HML       |         —          |    0.265 (1.94)    |    0.265 (1.94)    |    0.226 (1.68)    |
+| Mom       |         —          |         —          |   -0.013 (-0.04)   |         —          |
+| RMW       |         —          |         —          |         —          | 0.494\*\*\* (3.62) |
+| CMA       |         —          |         —          |         —          |    0.083 (0.62)    |
 
-Fama-MacBeth Results — 100 Size×BM Portfolios. Entries: lambda estimate
-(significance) and (NW t-stat). *, **,*** = \|t\| \> 1.96, 2.58, 3.29.
+Fama-MacBeth Results — 100 Size x BM Portfolios. Entries: lambda
+estimate (significance stars) (NW t-stat). *, **,*** = \|t\| \> 1.96,
+2.58, 3.29.
 
 ``` r
 # Lambda point estimates with 95% NW confidence intervals

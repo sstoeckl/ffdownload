@@ -670,10 +670,10 @@ account for serial correlation in the pricing errors.</p>
 <span></span>
 <span><span class="va">fmt_col</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">res</span>, <span class="va">model_name</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.3f%s\n(%.2f)"</span>, <span class="va">lambda</span>, <span class="va">signif</span>, <span class="va">t_stat</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.3f%s (%.2f)"</span>, <span class="va">lambda</span>, <span class="va">signif</span>, <span class="va">t_stat</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">term</span>, <span class="va">cell</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">right_join</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>term <span class="op">=</span> <span class="va">all_terms</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"term"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">cell</span>, <span class="st">"—"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">cell</span>, <span class="st">"\u2014"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">model_name</span> <span class="op">:=</span> <span class="va">cell</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -685,15 +685,15 @@ account for serial correlation in the pricing errors.</p>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">fmb_table</span>, align <span class="op">=</span> <span class="st">"lcccc"</span>,</span>
 <span>             caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
-<span>               <span class="st">"Fama-MacBeth Results — 100 Size×BM Portfolios."</span>,</span>
-<span>               <span class="st">"Entries: lambda estimate (significance) and (NW t-stat)."</span>,</span>
+<span>               <span class="st">"Fama-MacBeth Results — 100 Size x BM Portfolios."</span>,</span>
+<span>               <span class="st">"Entries: lambda estimate (significance stars) (NW t-stat)."</span>,</span>
 <span>               <span class="st">"*, **, *** = |t| &gt; 1.96, 2.58, 3.29."</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>Fama-MacBeth Results — 100 Size×BM Portfolios. Entries: lambda
-estimate (significance) and (NW t-stat). <em>, <strong>, </strong></em>
-= |t| &gt; 1.96, 2.58, 3.29.</caption>
+<caption>Fama-MacBeth Results — 100 Size x BM Portfolios. Entries:
+lambda estimate (significance stars) (NW t-stat). <em>, <strong>,
+</strong></em> = |t| &gt; 1.96, 2.58, 3.29.</caption>
 <colgroup>
-<col width="13%">
+<col width="12%">
 <col width="21%">
 <col width="21%">
 <col width="21%">
@@ -709,171 +709,52 @@ estimate (significance) and (NW t-stat). <em>, <strong>, </strong></em>
 <tbody>
 <tr class="odd">
 <td align="left">Intercept</td>
-<td align="center">1.319***</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(3.73)</td>
-<td align="center">1.033***</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(4.41)</td>
-<td align="center">1.033***</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(4.43)</td>
-<td align="center">0.956***</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(3.86)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">1.319*** (3.73)</td>
+<td align="center">1.033*** (4.41)</td>
+<td align="center">1.033*** (4.43)</td>
+<td align="center">0.956*** (3.86)</td>
 </tr>
 <tr class="even">
 <td align="left">Mkt.RF</td>
-<td align="center">-0.488</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(-1.21)</td>
-<td align="center">-0.319</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(-1.27)</td>
-<td align="center">-0.318</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(-1.27)</td>
-<td align="center">-0.256</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(-0.97)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">-0.488 (-1.21)</td>
+<td align="center">-0.319 (-1.27)</td>
+<td align="center">-0.318 (-1.27)</td>
+<td align="center">-0.256 (-0.97)</td>
 </tr>
 <tr class="odd">
 <td align="left">SMB</td>
 <td align="center">—</td>
-<td align="center">0.025</td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">0.025 (0.19)</td>
+<td align="center">0.025 (0.19)</td>
+<td align="center">0.115 (0.91)</td>
 </tr>
 <tr class="even">
-<td align="left">(0.19)</td>
-<td align="center">0.025</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(0.19)</td>
-<td align="center">0.115</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(0.91)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
 <td align="left">HML</td>
 <td align="center">—</td>
-<td align="center">0.265</td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(1.94)</td>
-<td align="center">0.265</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
-<td align="left">(1.94)</td>
-<td align="center">0.226</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="even">
-<td align="left">(1.68)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">0.265 (1.94)</td>
+<td align="center">0.265 (1.94)</td>
+<td align="center">0.226 (1.68)</td>
 </tr>
 <tr class="odd">
 <td align="left">Mom</td>
 <td align="center">—</td>
 <td align="center">—</td>
-<td align="center">-0.013</td>
-<td align="center"></td>
+<td align="center">-0.013 (-0.04)</td>
+<td align="center">—</td>
 </tr>
 <tr class="even">
-<td align="left">(-0.04)</td>
-<td align="center">—</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr class="odd">
 <td align="left">RMW</td>
 <td align="center">—</td>
 <td align="center">—</td>
 <td align="center">—</td>
-<td align="center">0.494***</td>
-</tr>
-<tr class="even">
-<td align="left">(3.62)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">0.494*** (3.62)</td>
 </tr>
 <tr class="odd">
 <td align="left">CMA</td>
 <td align="center">—</td>
 <td align="center">—</td>
 <td align="center">—</td>
-<td align="center">0.083</td>
-</tr>
-<tr class="even">
-<td align="left">(0.62)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<td align="center">0.083 (0.62)</td>
 </tr>
 </tbody>
 </table>
