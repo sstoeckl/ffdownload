@@ -556,10 +556,10 @@ all_terms <- c("Intercept","Mkt.RF","SMB","HML","Mom","RMW","CMA")
 
 fmt_col <- function(res, model_name) {
   res |>
-    mutate(cell = sprintf("%.3f%s\n(%.2f)", lambda, signif, t_stat)) |>
+    mutate(cell = sprintf("%.3f%s (%.2f)", lambda, signif, t_stat)) |>
     select(term, cell) |>
     right_join(tibble(term = all_terms), by = "term") |>
-    mutate(cell = replace_na(cell, "—")) |>
+    mutate(cell = replace_na(cell, "\u2014")) |>
     rename(!!model_name := cell)
 }
 
@@ -571,8 +571,8 @@ fmb_table <- fmt_col(res_capm, "CAPM") |>
 
 knitr::kable(fmb_table, align = "lcccc",
              caption = paste(
-               "Fama-MacBeth Results — 100 Size×BM Portfolios.",
-               "Entries: lambda estimate (significance) and (NW t-stat).",
+               "Fama-MacBeth Results — 100 Size x BM Portfolios.",
+               "Entries: lambda estimate (significance stars) (NW t-stat).",
                "*, **, *** = |t| > 1.96, 2.58, 3.29."))
 ```
 
