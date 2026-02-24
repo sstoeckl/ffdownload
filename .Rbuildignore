@@ -15,3 +15,4 @@ vignettes/assetpricing.Rmd
 ^LICENSE\.md$
 ^CITATION\.cff$
 ^CLAUDE\.md$
+^other_pckgs\.md$
