@@ -18,3 +18,4 @@ list of annual/monthly/daily files
 \description{
 \code{converter} read/clean/write
 }
+\keyword{internal}

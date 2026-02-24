@@ -8,6 +8,7 @@
 #'
 #' @return list of annual/monthly/daily files
 #'
+#' @keywords internal
 #' @importFrom stats na.omit
 #' @importFrom utils download.file read.csv unzip
 #' @import xts rvest
@@ -97,6 +98,7 @@ converter <- function(file, na_values = NULL) {
 #'
 #' @return list of annual/monthly/daily files
 #'
+#' @keywords internal
 #' @importFrom stats na.omit
 #' @importFrom utils download.file read.csv unzip
 #' @import xts rvest
