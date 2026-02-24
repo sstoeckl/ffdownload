@@ -77,16 +77,18 @@ devtools::install_github("sstoeckl/FFdownload@dev")
 intermediate file, no `load()` call, and missing values (`-99`, `-999`,
 `-99.99`) are replaced with `NA` by default.
 
-```{r example_0_ffget, eval=FALSE}
+```{r load_pck, eval=TRUE, message=FALSE, warning=FALSE}
 library(FFdownload)
 library(tidyverse)
+```
 
+```{r example_0_ffget, eval=TRUE}
 # Get the FF 5-factor monthly data directly as a tibble
 ff5 <- FFget("F-F_Research_Data_5_Factors_2x3", subtable = "Temp2")
 head(ff5)
 ```
 
-```{r example_0_ffget_plot, eval=FALSE}
+```{r example_0_ffget_plot, eval=TRUE}
 ff5 |>
   tidyr::pivot_longer(cols = -date, names_to = "FFFactors", values_to = "Value") |>
   group_by(FFFactors) |> mutate(Price = cumprod(1 + Value / 100)) |>
@@ -103,14 +105,14 @@ For bulk downloads, reproducible snapshots, or `xts` output, see Examples 1–3 
 Before downloading, you can browse all available datasets and verify that your
 search strings match the intended files.
 
-```{r example_fflist, eval=FALSE}
+```{r example_fflist, eval=TRUE}
 # All non-daily datasets as a tidy data frame (tibble)
 fl <- FFlist()
 nrow(fl)        # typically 100+ datasets
 head(fl, 8)
 ```
 
-```{r example_fflist_filter, eval=FALSE}
+```{r example_fflist_filter, eval=TRUE}
 # Filter with dplyr
 library(dplyr)
 FFlist() |> filter(grepl("Momentum|Reversal", name))
