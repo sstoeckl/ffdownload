@@ -209,11 +209,16 @@ ggplot(ts_capm, aes(x = bm_lbl, y = size_lbl, fill = alpha)) +
   theme(axis.text.x = element_text(angle = 0))
 ```
 
-The classic Fama-French (1993) pattern is visible: **small-cap value portfolios
-have large positive CAPM alphas; large-cap growth portfolios have negative alphas**.
-CAPM cannot account for the size and value premiums.
+The heat map shows a **value tilt** in CAPM alphas: portfolios in the highest
+BM quintile (value) tend to have positive alphas, while growth portfolios
+cluster near zero or negative. However, with the full sample stretching back
+to July 1926, the pattern is noisier than in the original Fama-French (1993)
+paper, which used only 1963–1991 data — a period when the size and value premia
+were particularly strong. CAPM cannot account for these premia, but statistical
+significance is limited: only `r sum(abs(ts_capm$alpha_t) > 2)` of 25 alphas
+clear the |t| > 2 threshold at conventional levels.
 
-### 2.2  FF3: pricing errors shrink dramatically
+### 2.2  FF3: modest improvement over the full sample
 
 ```{r ts_ff3}
 ts_ff3 <- pf25_long |>
@@ -249,6 +254,19 @@ ggplot(ts_ff3, aes(x = bm_lbl, y = size_lbl, fill = alpha)) +
        x = "Book-to-Market Quintile", y = "Size Quintile") +
   theme_minimal(base_size = 11)
 ```
+
+When run over the **full French library sample** (July 1926 to present), the
+FF3 improvement is more muted than the original 1993 paper suggests.
+Mean absolute alpha falls from `r round(mean(abs(ts_capm$alpha)), 3)` to
+`r round(mean(abs(ts_ff3$alpha)), 3)` %/month — a
+`r round((1 - mean(abs(ts_ff3$alpha)) / mean(abs(ts_capm$alpha))) * 100)`%
+reduction. Notably, the number of *statistically significant* alphas may
+increase rather than decrease under FF3: the three factors fit some portfolios
+well while exposing pricing errors in others that CAPM had masked by a higher
+residual variance. The **value premium has weakened substantially
+post-2004**, a well-documented phenomenon (Fama and French 2015;
+Hou, Xue and Zhang 2015), which attenuates FF3's advantage when the recent
+decades are included.
 
 ### 2.3  Side-by-side comparison
 
@@ -351,10 +369,14 @@ tibble(
                caption = "GRS Test — 25 Size×BM Portfolios")
 ```
 
-Both models are rejected at conventional levels by the GRS test. However, the
-FF3 GRS statistic is substantially smaller than the CAPM statistic and the mean
-absolute alpha is sharply reduced, confirming that SMB and HML capture a large
-fraction of the size and value patterns in returns.
+Both models are **strongly rejected** by the GRS test (both p-values ≈ 0).
+Over the full historical sample the two GRS statistics are close in magnitude
+(`r grs_capm$GRS` for CAPM vs `r grs_ff3$GRS` for FF3), reflecting the fact
+that the FF3 factors were constructed to price the **1963–1991** period.
+Extending the sample back to 1926 and forward to the present — where the value
+premium has weakened considerably — limits how much SMB and HML can reduce the
+joint pricing errors relative to CAPM. In shorter sub-samples aligned with the
+original paper, FF3 typically shows a much larger improvement.
 
 ---
 
@@ -583,23 +605,31 @@ bind_rows(
 
 ### 5.5  Interpretation
 
-The FMB results replicate the classic findings from the literature:
+The FMB results with the **current full-history data** reveal both the classic
+findings and their modern limitations:
 
-- **CAPM**: The market beta price ($\lambda_{\text{Mkt}}$) is typically small
-  and statistically insignificant, while the intercept is significantly positive.
-  A priced factor should have $\lambda \approx$ mean factor return and intercept
-  $\approx 0$; the CAPM fails both conditions.
+- **CAPM**: The market beta price ($\lambda_{\text{Mkt}}$) is negative and
+  statistically insignificant, while the intercept is significantly positive.
+  A priced factor should have $\lambda \approx$ mean factor return and
+  intercept $\approx 0$; the CAPM fails both conditions — consistent with
+  Fama and MacBeth (1973) and all subsequent replications.
 
-- **FF3**: SMB and HML command positive and significant risk prices in the
-  cross-section, consistent with size and value being priced risks. The intercept
-  shrinks toward zero.
+- **FF3**: HML retains a borderline-significant positive price of risk, but
+  **SMB's risk price is statistically indistinguishable from zero** in the
+  current sample. The size premium largely disappeared after the 1980s
+  (Hou, Xue and Zhang 2015; Fama and French 2015). This is a known
+  post-publication result: the cross-sectional power of SMB has declined
+  sharply when using data after 1990.
 
-- **FF4 (Carhart)**: Momentum carries a positive and significant price of risk,
-  confirming that it adds cross-sectional explanatory power beyond FF3.
+- **FF4 (Carhart)**: Momentum contributes additional cross-sectional
+  explanatory power; its price of risk is consistent in sign with the large
+  time-series WML premium documented in Section 4.
 
-- **FF5**: RMW (profitability) and CMA (investment) are positive. Including
-  these sometimes attenuates the HML price of risk, consistent with Fama and
-  French (2015) who argue HML is partially redundant given RMW and CMA.
+- **FF5**: RMW (profitability) carries the most robust positive risk price
+  among the new factors — consistent with Fama and French (2015, 2016).
+  CMA's estimate is positive but less precise. As FF (2015) argue, HML
+  becomes partially redundant once RMW and CMA are included, which is
+  visible in a smaller HML coefficient relative to the FF3 model.
 
 ---
 
@@ -608,14 +638,21 @@ The FMB results replicate the classic findings from the literature:
 | Test | CAPM | FF3 | FF4 | FF5 |
 |---|---|---|---|---|
 | Mean \|α\| (25 pf, %/mo) | `r round(grs_capm$mean_abs_alpha,3)` | `r round(grs_ff3$mean_abs_alpha,3)` | — | — |
+| GRS statistic (25 pf) | `r grs_capm$GRS` | `r grs_ff3$GRS` | — | — |
 | GRS p-value (25 pf) | `r grs_capm$p_value` | `r grs_ff3$p_value` | — | — |
+| WML mean return significant? | Yes | Yes | Yes | Yes |
 | WML alpha significant? | Yes | Yes | By construction | — |
-| SMB priced in FMB? | N/A | Yes | Yes | Yes |
-| HML priced in FMB? | N/A | Yes | Yes | Attenuated |
+| SMB priced in FMB? | N/A | Weak/No | Weak/No | Weak/No |
+| HML priced in FMB? | N/A | Borderline | Borderline | Attenuated |
+| RMW priced in FMB? | N/A | N/A | N/A | Yes |
 | Mom priced in FMB? | N/A | N/A | Yes | N/A |
 
-The 25 Size×BM portfolios present a severe challenge to the CAPM. Adding SMB
-and HML under FF3 dramatically reduces pricing errors but does not pass the
-GRS test. Momentum remains an anomaly under CAPM and FF3. The FMB regressions
-confirm that SMB, HML, and momentum betas are associated with positive risk
-premia in the cross-section of these portfolios.
+The 25 Size×BM portfolios present a severe challenge to the CAPM; both CAPM
+and FF3 are rejected by the GRS test. However, with French's data now spanning
+**`r format(min(factors_ff3hist$date))` to `r format(max(factors_ff3hist$date))`**,
+the FF3 improvement over CAPM is more modest than in the original 1993 paper.
+The value and size premia have weakened substantially since the mid-2000s —
+a textbook example of **post-publication factor decay**. Momentum remains a
+robust anomaly unexplained by CAPM or FF3. In the FMB cross-section, RMW
+(profitability) is the most reliably priced factor in the current sample,
+while SMB's risk price is statistically negligible.

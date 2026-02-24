@@ -4,12 +4,16 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-"
 )
+library(FFdownload)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 # FFdownload <a href='https://github.com/sstoeckl/FFdownload'><img src='man/figures/logo.png' align="right" height="139" /></a>
@@ -23,7 +27,7 @@ knitr::opts_chunk$set(
   [![CRAN downloads last month](http://cranlogs.r-pkg.org/badges/FFdownload)](https://cran.r-project.org/package=FFdownload)
   [![CRAN downloads last week](http://cranlogs.r-pkg.org/badges/last-week/FFdownload)](https://cran.r-project.org/package=FFdownload)
   [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-  [![Website - pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://www.sebastianstoeckl.com/ffdownload/)
+  [![Website - pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://sstoeckl.github.io/ffdownload/)
 <!-- badges: end -->
 
 # `R` Code to download Datasets from [Kenneth French's famous website](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
