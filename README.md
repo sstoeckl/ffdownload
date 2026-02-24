@@ -20,7 +20,7 @@ week](http://cranlogs.r-pkg.org/badges/last-week/FFdownload)](https://cran.r-pro
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Website -
-pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://sstoeckl.github.io/ffdownload/)
+pkgdown](https://img.shields.io/website-up-down-green-red/https/sstoeckl.github.io/ffdownload.svg)](https://www.sebastianstoeckl.com/ffdownload/)
 <!-- badges: end -->
 
 # `R` Code to download Datasets from [Kenneth French’s famous website](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
