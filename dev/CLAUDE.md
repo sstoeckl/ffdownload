@@ -67,12 +67,12 @@ devtools::load_all()
 
 ### Exported functions
 
-| Function                                                                            | File             | Purpose                                                     |
-|-------------------------------------------------------------------------------------|------------------|-------------------------------------------------------------|
-| [`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md) | `R/FFdownload.R` | Main workhorse: scrape → download → process → save `.RData` |
-| [`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md)         | `R/FFlist.R`     | Returns dataset inventory as a data frame/tibble            |
-| [`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)       | `R/FFmatch.R`    | Previews fuzzy-match results before downloading             |
-| [`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)           | `R/FFget.R`      | Downloads one dataset and returns it directly (no file I/O) |
+| Function                                                                                  | File             | Purpose                                                     |
+|-------------------------------------------------------------------------------------------|------------------|-------------------------------------------------------------|
+| [`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md) | `R/FFdownload.R` | Main workhorse: scrape → download → process → save `.RData` |
+| [`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md)         | `R/FFlist.R`     | Returns dataset inventory as a data frame/tibble            |
+| [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)       | `R/FFmatch.R`    | Previews fuzzy-match results before downloading             |
+| [`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)           | `R/FFget.R`      | Downloads one dataset and returns it directly (no file I/O) |
 
 ### `FFdownload()` (`R/FFdownload.R`)
 
@@ -81,9 +81,9 @@ Kenneth French’s website HTML for all CSV zip-file links. 2.
 **Download** selected zip files (filtered via `inputlist` using fuzzy
 string matching with [`adist()`](https://rdrr.io/r/utils/adist.html)).
 3. **Process** each CSV via
-[`converter()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter.md)
+[`converter()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter.md)
 or
-[`converter_tbl()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter_tbl.md),
+[`converter_tbl()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter_tbl.md),
 merge daily/non-daily variants, save as `.RData` containing `FFdata`.
 
 **Parameters added in v1.2.0** (all default to original behaviour): -
@@ -119,23 +119,23 @@ to tibble if available.
 ### `FFmatch()` (`R/FFmatch.R`)
 
 Calls
-[`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md)
+[`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md)
 internally, then runs [`adist()`](https://rdrr.io/r/utils/adist.html) to
 find the closest match for each entry in `inputlist`. Returns a data
 frame with `requested`, `matched`, `edit_distance`, `similarity`
 columns. Use before
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 to verify fuzzy matches.
 
 ### `FFget()` (`R/FFget.R`)
 
 Thin wrapper: calls
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 with `return_data=TRUE` to a
 [`tempfile()`](https://rdrr.io/r/base/tempfile.html), then extracts the
 requested `frequency` and `subtable` slice. Applies
 `na_values=c(-99, -999, -99.99)` by default (unlike
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 which defaults to `NULL`).
 
 ### Output data structure
@@ -154,14 +154,14 @@ which defaults to `NULL`).
 Tests live in `tests/testthat/test-backward-compat.R`. All tests use
 `skip_on_cran()` and `skip_if_offline()` because they require network
 access. The test suite covers: - Structural equivalence:
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 with old API parameters produces the same list structure as documented
 in v1.1.x vignettes. - `return_data=TRUE` gives the same object as
 `load(output_file)`. - `action` parameter equivalences with
 `download`/`download_only` flags. - `na_values` sentinel replacement. -
-[`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md),
-[`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md),
-[`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)
+[`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md),
+[`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md),
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)
 return correct structures and values. - `cache_days` prevents
 re-downloading fresh files. - `match_threshold` warning behaviour.
 

@@ -102,7 +102,7 @@ FFdownload(
   numeric in \[0,1\]. If the similarity between a requested `inputlist`
   entry and its fuzzy-matched filename is below this threshold a warning
   is emitted. Use
-  [`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)
+  [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)
   to inspect matches before downloading. Default `0.3`.
 
 ## Value

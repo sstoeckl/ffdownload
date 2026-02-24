@@ -2,7 +2,7 @@
 
 `FFmatch` shows how each entry in `inputlist` would be matched to an
 available dataset by the fuzzy-matching logic inside
-[`FFdownload`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md).
+[`FFdownload`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md).
 Use this to verify matches before triggering a download, especially when
 dataset names are abbreviated or partially specified.
 
@@ -18,7 +18,7 @@ FFmatch(inputlist, exclude_daily = TRUE)
 
   character vector of (partial) dataset names to match, as you would
   pass to the `inputlist` argument of
-  [`FFdownload`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md).
+  [`FFdownload`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md).
 
 - exclude_daily:
 

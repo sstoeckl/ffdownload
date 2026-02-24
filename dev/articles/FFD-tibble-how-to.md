@@ -9,13 +9,13 @@ outfile <- paste0(outd, "FFData_tbl.RData")
 
 This vignette covers the tidyverse workflow. For the step-by-step xts
 workflow (with separate download and processing stages), see
-[`vignette("FFD-xts-how-to")`](https://sstoeckl.github.io/ffdownload/dev/articles/FFD-xts-how-to.md).
+[`vignette("FFD-xts-how-to")`](https://www.sebastianstoeckl.com/ffdownload/dev/articles/FFD-xts-how-to.md).
 
 ------------------------------------------------------------------------
 
 ## Quick start: `FFget()` (new in v1.2.0)
 
-[`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)
 is the simplest way to get a single dataset into your session. It
 returns a tibble directly — no intermediate `.RData` file, no
 [`load()`](https://rdrr.io/r/base/load.html) call. Missing-value
@@ -72,11 +72,11 @@ FFmatch(c("Research_Data_Factors", "Momentum_Factor"))
 
 For downloading multiple datasets in one call and/or saving a dated
 snapshot for reproducible research, use
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 directly with `format = "tibble"`.
 
 For a detailed explanation of the download / process separation, see
-[`vignette("FFD-xts-how-to")`](https://sstoeckl.github.io/ffdownload/dev/articles/FFD-xts-how-to.md).
+[`vignette("FFD-xts-how-to")`](https://www.sebastianstoeckl.com/ffdownload/dev/articles/FFD-xts-how-to.md).
 Here we download and process in one step:
 
 ``` r

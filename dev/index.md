@@ -8,15 +8,15 @@
 several quality-of-life improvements while remaining fully backward
 compatible:
 
-| Function                                                                            | What it does                                                                      |
-|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| [`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)           | Download one dataset and return it directly — no file I/O required                |
-| [`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md)         | Browse all available datasets as a tidy data frame                                |
-| [`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)       | Preview fuzzy-match results before triggering a download                          |
-| [`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md) | Now accepts `na_values`, `return_data`, `action`, `cache_days`, `match_threshold` |
+| Function                                                                                  | What it does                                                                      |
+|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| [`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)           | Download one dataset and return it directly — no file I/O required                |
+| [`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md)         | Browse all available datasets as a tidy data frame                                |
+| [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)       | Preview fuzzy-match results before triggering a download                          |
+| [`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md) | Now accepts `na_values`, `return_data`, `action`, `cache_days`, `match_threshold` |
 
 All existing
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 calls continue to work without any changes.
 
 **Version 1.1.1** corrects a small error for publication on CRAN.
@@ -53,7 +53,7 @@ devtools::install_github("sstoeckl/FFdownload@dev")
 
 ### Example 0: One-liner with `FFget()` (new in v1.2.0)
 
-[`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)
 is the fastest way to get a single dataset into your session. No
 intermediate file, no [`load()`](https://rdrr.io/r/base/load.html) call,
 and missing values (`-99`, `-999`, `-99.99`) are replaced with `NA` by
@@ -99,7 +99,7 @@ library(dplyr)
 FFlist() |> filter(grepl("Momentum|Reversal", name))
 ```
 
-[`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)
+[`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)
 shows exactly which file each search string would be matched to,
 including a similarity score (below 0.3 = possibly wrong match):
 
@@ -242,9 +242,9 @@ FFfive %>%
 
 ### Output data structure
 
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 and
-[`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)
 return a nested list:
 
 ``` R

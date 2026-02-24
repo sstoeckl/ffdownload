@@ -56,9 +56,9 @@
 - **Multi-table CSV handling**: French’s CSV files embed multiple
   sub-tables (e.g., value-weighted returns, equal-weighted returns,
   number of firms, average market cap all in one file). Both
-  [`converter()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter.md)
+  [`converter()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter.md)
   and
-  [`converter_tbl()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter_tbl.md)
+  [`converter_tbl()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter_tbl.md)
   correctly split and name all sub-tables. `frenchdata` and
   `NMOF::French()` typically return only one sub-table (the
   first/default one), silently discarding the rest.
@@ -191,9 +191,9 @@ affected.
 **Problem addressed**: §3.2 **Change**: Add an optional `na_values`
 parameter defaulting to `NULL` (preserves current behaviour). When set
 to a numeric vector (e.g., `c(-99, -999, -99.99)`),
-[`converter()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter.md)
+[`converter()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter.md)
 /
-[`converter_tbl()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter_tbl.md)
+[`converter_tbl()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter_tbl.md)
 replaces these values with `NA` after parsing each sub-table.
 
 ``` r
@@ -211,7 +211,7 @@ unchanged.
 
 **Problem addressed**: §3.3 **Change**: Add `return_data = FALSE`
 parameter. When `TRUE`,
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 returns the `FFdata` list invisibly in addition to (or instead of)
 saving it.
 
@@ -303,7 +303,7 @@ the sub-table `"factors"`. If this heuristic is not possible, keep the
 
 Alternatively (simpler and fully backward-compatible): add a
 `verbose_names = FALSE` parameter. When `TRUE`,
-[`converter()`](https://sstoeckl.github.io/ffdownload/dev/reference/converter.md)
+[`converter()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/converter.md)
 logs a message mapping each `TempN` to the line range and first few
 column names, helping users understand the structure without changing
 the output names.
@@ -336,7 +336,7 @@ factors <- FFget("F-F_Research_Data_Factors", subtable = "Temp2")
 
 This is the single biggest usability improvement for new and interactive
 users. It does not modify
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 at all.
 
 ------------------------------------------------------------------------
@@ -385,7 +385,7 @@ And similarly for download URLs. One-line change, zero API impact.
 
 **Problem addressed**: §3.7, §3.8 **Change** (documentation only, no
 code): Add a dedicated section to the main
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 man page and the xts vignette explaining: - Why list element names have
 an `x_` prefix. - What `Temp1`, `Temp2`, etc. mean and how to discover
 which sub-table is which (`names(FFdata[["x_..."]]$monthly)`). - A
@@ -397,16 +397,16 @@ sub-table name (e.g., factor files → `Temp2`, portfolio files →
 
 ## 5. Priority Summary
 
-| \#   | Suggestion                                                                                          | Effort  | Impact    | BC risk |
-|------|-----------------------------------------------------------------------------------------------------|---------|-----------|---------|
-| 4.10 | HTTPS URLs                                                                                          | Trivial | Medium    | None    |
-| 4.9  | Remove `plyr`                                                                                       | Low     | Medium    | None    |
-| 4.2  | `na_values` sentinel → NA                                                                           | Low     | High      | None    |
-| 4.3  | `return_data` parameter                                                                             | Low     | High      | None    |
-| 4.1  | [`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md) function                | Low     | High      | None    |
-| 4.11 | Document `TempN` naming                                                                             | Low     | High      | None    |
-| 4.8  | [`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md) convenience wrapper       | Medium  | Very high | None    |
-| 4.6  | Fuzzy match warning + [`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md) | Medium  | Medium    | None    |
-| 4.5  | `cache_days` parameter                                                                              | Medium  | Medium    | None    |
-| 4.4  | `action` parameter                                                                                  | Medium  | Medium    | None    |
-| 4.7  | Smarter sub-table naming                                                                            | Medium  | Medium    | None    |
+| \#   | Suggestion                                                                                                | Effort  | Impact    | BC risk |
+|------|-----------------------------------------------------------------------------------------------------------|---------|-----------|---------|
+| 4.10 | HTTPS URLs                                                                                                | Trivial | Medium    | None    |
+| 4.9  | Remove `plyr`                                                                                             | Low     | Medium    | None    |
+| 4.2  | `na_values` sentinel → NA                                                                                 | Low     | High      | None    |
+| 4.3  | `return_data` parameter                                                                                   | Low     | High      | None    |
+| 4.1  | [`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md) function                | Low     | High      | None    |
+| 4.11 | Document `TempN` naming                                                                                   | Low     | High      | None    |
+| 4.8  | [`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md) convenience wrapper       | Medium  | Very high | None    |
+| 4.6  | Fuzzy match warning + [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md) | Medium  | Medium    | None    |
+| 4.5  | `cache_days` parameter                                                                                    | Medium  | Medium    | None    |
+| 4.4  | `action` parameter                                                                                        | Medium  | Medium    | None    |
+| 4.7  | Smarter sub-table naming                                                                                  | Medium  | Medium    | None    |

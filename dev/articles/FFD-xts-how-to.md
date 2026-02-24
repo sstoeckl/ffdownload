@@ -1,16 +1,16 @@
 # How-to xts
 
 This vignette demonstrates the step-by-step
-[`FFdownload()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 workflow — browse available datasets, download, and process separately —
 using `xts` as the output format. This separation is valuable for
 reproducible research: you can save a dated snapshot of the raw zip
 files and re-process them at any time without re-downloading.
 
 For a simpler one-step approach (especially for interactive use), see
-[`vignette("FFD-tibble-how-to")`](https://sstoeckl.github.io/ffdownload/dev/articles/FFD-tibble-how-to.md)
+[`vignette("FFD-tibble-how-to")`](https://www.sebastianstoeckl.com/ffdownload/dev/articles/FFD-tibble-how-to.md)
 and the
-[`FFget()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFget.md)
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFget.md)
 function.
 
 ``` r
@@ -24,7 +24,7 @@ listfile <- paste0(outd, "FFList.txt")
 
 ### Option A — `FFlist()` (recommended, new in v1.2.0)
 
-[`FFlist()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFlist.md)
+[`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFlist.md)
 returns a tidy data frame that you can filter directly:
 
 ``` r
@@ -55,7 +55,7 @@ read.delim(listfile, sep=",")[c(1:4, 73:74), ]
 ### Verifying your search strings with `FFmatch()`
 
 Before downloading, use
-[`FFmatch()`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)
+[`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)
 to confirm that your (partial) names map to the datasets you intend:
 
 ``` r

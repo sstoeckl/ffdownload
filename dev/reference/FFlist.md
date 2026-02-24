@@ -3,7 +3,7 @@
 `FFlist` scrapes Kenneth French's data library and returns a data frame
 (or tibble) of available datasets with their names and download URLs.
 This replaces the `listsave` workaround in
-[`FFdownload`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 and makes the dataset inventory directly usable with
 [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html)
 or [`View()`](https://rdrr.io/r/utils/View.html).

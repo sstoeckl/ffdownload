@@ -1,7 +1,7 @@
 # Download and return a single French dataset directly
 
 `FFget` is a convenience wrapper around
-[`FFdownload`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md)
+[`FFdownload`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md)
 that downloads one named dataset and returns it directly into the R
 session — no intermediate `.RData` file, no
 [`load()`](https://rdrr.io/r/base/load.html) call required.
@@ -31,7 +31,7 @@ FFget(
   character. The dataset name as it appears in `FFlist()$name`, e.g.
   `"F-F_Research_Data_Factors"` or `"F-F_Momentum_Factor"`. Fuzzy
   matching is applied, so partial names work (check with
-  [`FFmatch`](https://sstoeckl.github.io/ffdownload/dev/reference/FFmatch.md)
+  [`FFmatch`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)
   first).
 
 - frequency:
@@ -49,7 +49,7 @@ FFget(
 - exclude_daily:
 
   logical. Passed to
-  [`FFdownload`](https://sstoeckl.github.io/ffdownload/dev/reference/FFdownload.md).
+  [`FFdownload`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFdownload.md).
   Default `TRUE`.
 
 - na_values:
