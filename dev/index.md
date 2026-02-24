@@ -62,10 +62,26 @@ default.
 ``` r
 library(FFdownload)
 library(tidyverse)
+```
 
+``` r
 # Get the FF 5-factor monthly data directly as a tibble
 ff5 <- FFget("F-F_Research_Data_5_Factors_2x3", subtable = "Temp2")
+#> Step 1: getting list of all the csv-zip-files!
+#> Step 2: Downloading 1 zip-files
+#> Step 3: Start processing 1 csv-files
+#>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
+#> Be aware that as of version 1.0.6 the saved object is named FFdata rather than FFdownload to not be confused with the corresponding command!
 head(ff5)
+#> # A tibble: 6 × 7
+#>   date      Mkt.RF   SMB   HML   RMW   CMA    RF
+#>   <yearmon>  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 Jul 1963   -0.39 -0.48 -0.81  0.64 -1.15  0.27
+#> 2 Aug 1963    5.08 -0.8   1.7   0.4  -0.38  0.25
+#> 3 Sep 1963   -1.57 -0.43  0    -0.78  0.15  0.27
+#> 4 Okt 1963    2.54 -1.34 -0.04  2.79 -2.25  0.29
+#> 5 Nov 1963   -0.86 -0.85  1.73 -0.43  2.27  0.27
+#> 6 Dez 1963    1.83 -1.89 -0.21  0.12 -0.25  0.29
 ```
 
 ``` r
@@ -75,6 +91,8 @@ ff5 |>
   ggplot2::ggplot(aes(x = date, col = FFFactors, y = Price)) +
   geom_line(lwd = 1.2) + theme_bw() + theme(legend.position = "bottom")
 ```
+
+![](reference/figures/README-example_0_ffget_plot-1.png)
 
 For bulk downloads, reproducible snapshots, or `xts` output, see
 Examples 1–3 below.
@@ -90,13 +108,31 @@ that your search strings match the intended files.
 # All non-daily datasets as a tidy data frame (tibble)
 fl <- FFlist()
 nrow(fl)        # typically 100+ datasets
+#> [1] 193
 head(fl, 8)
+#> # A tibble: 8 × 2
+#>   name                                file_url                                  
+#>   <chr>                               <chr>                                     
+#> 1 F-F_Research_Data_Factors           https://mba.tuck.dartmouth.edu/pages/facu…
+#> 2 F-F_Research_Data_Factors_weekly    https://mba.tuck.dartmouth.edu/pages/facu…
+#> 3 F-F_Research_Data_5_Factors_2x3     https://mba.tuck.dartmouth.edu/pages/facu…
+#> 4 Portfolios_Formed_on_ME             https://mba.tuck.dartmouth.edu/pages/facu…
+#> 5 Portfolios_Formed_on_ME_Wout_Div    https://mba.tuck.dartmouth.edu/pages/facu…
+#> 6 Portfolios_Formed_on_BE-ME          https://mba.tuck.dartmouth.edu/pages/facu…
+#> 7 Portfolios_Formed_on_BE-ME_Wout_Div https://mba.tuck.dartmouth.edu/pages/facu…
+#> 8 Portfolios_Formed_on_OP             https://mba.tuck.dartmouth.edu/pages/facu…
 ```
 
 ``` r
 # Filter with dplyr
 library(dplyr)
 FFlist() |> filter(grepl("Momentum|Reversal", name))
+#> # A tibble: 3 × 2
+#>   name                   file_url                                               
+#>   <chr>                  <chr>                                                  
+#> 1 F-F_Momentum_Factor    https://mba.tuck.dartmouth.edu/pages/faculty/ken.frenc…
+#> 2 F-F_ST_Reversal_Factor https://mba.tuck.dartmouth.edu/pages/faculty/ken.frenc…
+#> 3 F-F_LT_Reversal_Factor https://mba.tuck.dartmouth.edu/pages/faculty/ken.frenc…
 ```
 
 [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/dev/reference/FFmatch.md)
