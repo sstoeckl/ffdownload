@@ -10,6 +10,7 @@ README-FFpic_1.png$
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.claude$
 ^CRAN-SUBMISSION$
 ^LICENSE\.md$
 ^CITATION\.cff$
