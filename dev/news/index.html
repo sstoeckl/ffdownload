@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.2.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.2.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,33 @@
       <small>Source: <a href="https://github.com/sstoeckl/ffdownload/blob/dev/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.2.0" id="ffdownload-120">FFdownload 1.2.0<a class="anchor" aria-label="anchor" href="#ffdownload-120"></a></h2>
+<div class="section level3">
+<h3 id="new-functions-1-2-0">New functions<a class="anchor" aria-label="anchor" href="#new-functions-1-2-0"></a></h3>
+<ul><li><p><code><a href="../reference/FFlist.html">FFlist()</a></code>: scrapes Kenneth French’s data library and returns a tidy data frame (or tibble) of all available datasets, with columns <code>name</code> and <code>file_url</code>. The <code>name</code> column can be passed directly to <code>inputlist</code>.</p></li>
+<li><p><code><a href="../reference/FFmatch.html">FFmatch()</a></code>: previews fuzzy-match results for a given <code>inputlist</code> before downloading. Returns <code>requested</code>, <code>matched</code>, <code>edit_distance</code>, and <code>similarity</code> columns so users can verify matches without committing to a download.</p></li>
+<li><p><code><a href="../reference/FFget.html">FFget()</a></code>: downloads a single dataset directly into the R session (no file I/O). Accepts <code>frequency</code> and <code>subtable</code> arguments to slice the desired sub-table. Applies <code>na_values = c(-99, -999, -99.99)</code> by default.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-to-ffdownload-1-2-0">Enhancements to <code>FFdownload()</code>
+<a class="anchor" aria-label="anchor" href="#enhancements-to-ffdownload-1-2-0"></a></h3>
+<ul><li><p>New <code>na_values</code> parameter: replace French’s sentinel missing-value codes (e.g. −99, −999, −99.99) with <code>NA</code> after numeric conversion.</p></li>
+<li><p>New <code>return_data</code> parameter: when <code>TRUE</code>, returns the <code>FFdata</code> list invisibly in addition to saving the <code>.RData</code> file.</p></li>
+<li><p>New <code>action</code> parameter: cleaner alternative to the <code>download</code> / <code>download_only</code> flag pair. Accepts <code>"all"</code>, <code>"list_only"</code>, <code>"download_only"</code>, or <code>"process_only"</code>.</p></li>
+<li><p>New <code>cache_days</code> parameter: skips re-downloading zip files in <code>tempd</code> that are younger than the specified number of days.</p></li>
+<li><p>New <code>match_threshold</code> parameter: emits a warning when the fuzzy-match similarity for any requested dataset falls below the threshold.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="enhancements-to-internal-converters-1-2-0">Enhancements to internal converters<a class="anchor" aria-label="anchor" href="#enhancements-to-internal-converters-1-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/converter.html">converter()</a></code> and <code><a href="../reference/converter_tbl.html">converter_tbl()</a></code> now accept a <code>na_values</code> argument and apply sentinel replacement after numeric conversion.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-vignette-1-2-0">New vignette<a class="anchor" aria-label="anchor" href="#new-vignette-1-2-0"></a></h3>
+<ul><li>Added <code>assetpricing.Rmd</code>: a complete empirical asset pricing workflow covering time-series tests (CAPM, FF3) on 25 Size×BM portfolios, the GRS joint test, the momentum anomaly, and Fama-MacBeth cross-sectional regressions under CAPM, FF3, FF4 (Carhart), and FF5 across 100 Size×BM portfolios.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.1" id="ffdownload-111">FFdownload 1.1.1<a class="anchor" aria-label="anchor" href="#ffdownload-111"></a></h2><p class="text-muted">CRAN release: 2023-10-12</p>
 <ul><li>Release to CRAN after previous package version has been archived due to a broken travis link.</li>
