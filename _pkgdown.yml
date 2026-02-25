@@ -1,7 +1,23 @@
 url: https://www.sebastianstoeckl.com/ffdownload/
+
+development:
+  mode: auto
+
 template:
   bootstrap: 5
   bootswatch: spacelab
+
 navbar:
   bg: primary
 
+reference:
+  - title: "Core download function"
+    desc: "Main workhorse — downloads, processes and saves datasets from Kenneth French's data library."
+    contents:
+      - FFdownload
+  - title: "Convenience functions"
+    desc: "New in v1.2.0 — simpler access for interactive and exploratory use."
+    contents:
+      - FFget
+      - FFlist
+      - FFmatch

@@ -38,3 +38,8 @@ vignettes/*.pdf
 
 docs
 inst/doc
+/doc/
+/Meta/
+
+# Local non-build files
+linkedin.md

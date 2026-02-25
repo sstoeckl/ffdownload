@@ -2,16 +2,20 @@
 % Please edit documentation in R/converter.R
 \name{converter_tbl}
 \alias{converter_tbl}
-\title{Converter to read downloaded datasets and automatically put them into one large dataframe with xts}
+\title{Converter to read downloaded datasets and automatically put them into one large dataframe as tibbles}
 \usage{
-converter_tbl(file)
+converter_tbl(file, na_values = NULL)
 }
 \arguments{
 \item{file}{downloaded dataset}
+
+\item{na_values}{numeric vector of sentinel values to replace with \code{NA} after parsing.
+Default \code{NULL} performs no replacement (original behaviour).}
 }
 \value{
 list of annual/monthly/daily files
 }
 \description{
-\code{converter} read/clean/write
+\code{converter_tbl} read/clean/write
 }
+\keyword{internal}

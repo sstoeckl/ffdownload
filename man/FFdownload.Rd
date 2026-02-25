@@ -12,7 +12,12 @@ FFdownload(
   download_only = FALSE,
   listsave = NULL,
   inputlist = NULL,
-  format = "xts"
+  format = "xts",
+  na_values = NULL,
+  return_data = FALSE,
+  action = NULL,
+  cache_days = Inf,
+  match_threshold = 0.3
 )
 }
 \arguments{
@@ -33,9 +38,31 @@ Is written before inputlist is processed.}
 \item{inputlist}{if not NULL, FFdownload tries to match the names from the list with the list of zip-files}
 
 \item{format}{(set to xts) specify "xts" or "tbl"/"tibble" for the output format of the nested lists}
+
+\item{na_values}{numeric vector of sentinel values to replace with \code{NA} (e.g. \code{c(-99, -999, -99.99)}).
+French's files use -99.99 or -999 to denote missing observations. Default \code{NULL} preserves the original
+behaviour (no replacement).}
+
+\item{return_data}{logical. If \code{TRUE}, the \code{FFdata} list is returned invisibly in addition to being
+saved to \code{output_file}. Default \code{FALSE} preserves the original behaviour.}
+
+\item{action}{convenience alternative to the \code{download}/\code{download_only} flag pair.
+One of \code{"all"} (download + process), \code{"list_only"} (save file list only),
+\code{"download_only"} (download but do not process), or \code{"process_only"} (process already-downloaded
+files from \code{tempd}). When \code{action} is provided it overrides \code{download} and
+\code{download_only}. Default \code{NULL} retains the original flag-based behaviour.}
+
+\item{cache_days}{numeric. When greater than 0 and less than \code{Inf}, zip files already present in
+\code{tempd} that are younger than \code{cache_days} days are reused instead of being re-downloaded.
+Default \code{Inf} preserves the original behaviour (never re-download an existing file).}
+
+\item{match_threshold}{numeric in [0,1]. If the similarity between a requested \code{inputlist} entry and
+its fuzzy-matched filename is below this threshold a warning is emitted. Use \code{FFmatch()} to inspect
+matches before downloading. Default \code{0.3}.}
 }
 \value{
-RData file
+Invisibly returns the \code{FFdata} list when \code{return_data = TRUE}; otherwise called for its
+side-effect of writing an RData file.
 }
 \description{
 \code{FFdownload} returns an RData file with all (possibility to exclude the large daily) datasets from Kenneth French's Website.
@@ -63,15 +90,16 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=outd,download=FALSE,
 download_only=FALSE,inputlist=inputlist)
 load(tempf); FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 
-# Example 2: Download all non-daily files and process them
+# Example 2: Use action parameter and return data directly
 
-# Commented out to not being tested
-# tempf2 <- tempfile(fileext = ".RData");
-# outd2<- paste0(tempdir(),"/",format(Sys.time(), "\%F_\%H-\%M"))
-# FFdownload(output_file = tempf2,tempd = outd2, exclude_daily = TRUE, download = TRUE,
-# download_only=FALSE, listsave=temptxt)
-# load(tempf2)
-# FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
+FFdata <- FFdownload(
+  inputlist = c("F-F_Research_Data_5_Factors_2x3"),
+  output_file = tempf,
+  action = "all",
+  na_values = c(-99, -999, -99.99),
+  return_data = TRUE
+)
+FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2
 }
 
 }

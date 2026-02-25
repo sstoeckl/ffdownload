@@ -3,15 +3,18 @@
 #' @description \code{converter} read/clean/write
 #'
 #' @param file downloaded dataset
+#' @param na_values numeric vector of sentinel values to replace with \code{NA} after parsing.
+#' Default \code{NULL} performs no replacement (original behaviour).
 #'
 #' @return list of annual/monthly/daily files
 #'
+#' @keywords internal
 #' @importFrom stats na.omit
 #' @importFrom utils download.file read.csv unzip
 #' @import xts rvest
 #' @importFrom zoo as.yearmon
 #'
-converter <- function(file) {
+converter <- function(file, na_values = NULL) {
   data <- readLines(file)
 
   # replace commas at line ends (case Momentum)
@@ -72,27 +75,37 @@ converter <- function(file) {
 
   annual  <- lapply(datatest[unlist(a)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(paste0(as.character(x[, 1]),"12"), format = "%Y%m")) )
   monthly <- lapply(datatest[unlist(m)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")))
-  daily <- lapply(datatest[unlist(d)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")))
+  daily   <- lapply(datatest[unlist(d)], function(x) xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")))
 
-   return(list(annual = annual, monthly = monthly, daily = daily))
+  # Replace sentinel values with NA if requested
+  if (!is.null(na_values)) {
+    replace_sentinels_xts <- function(x) { x[x %in% na_values] <- NA; x }
+    annual  <- lapply(annual,  replace_sentinels_xts)
+    monthly <- lapply(monthly, replace_sentinels_xts)
+    daily   <- lapply(daily,   replace_sentinels_xts)
+  }
 
+  return(list(annual = annual, monthly = monthly, daily = daily))
 }
 
-#' @title Converter to read downloaded datasets and automatically put them into one large dataframe with xts
+#' @title Converter to read downloaded datasets and automatically put them into one large dataframe as tibbles
 #'
-#' @description \code{converter} read/clean/write
+#' @description \code{converter_tbl} read/clean/write
 #'
 #' @param file downloaded dataset
+#' @param na_values numeric vector of sentinel values to replace with \code{NA} after parsing.
+#' Default \code{NULL} performs no replacement (original behaviour).
 #'
 #' @return list of annual/monthly/daily files
 #'
+#' @keywords internal
 #' @importFrom stats na.omit
 #' @importFrom utils download.file read.csv unzip
 #' @import xts rvest
 #' @importFrom zoo as.yearmon
 #' @importFrom timetk tk_tbl
 #'
-converter_tbl <- function(file) {
+converter_tbl <- function(file, na_values = NULL) {
   data <- readLines(file)
 
   # replace commas at line ends (case Momentum)
@@ -151,14 +164,23 @@ converter_tbl <- function(file) {
   # in case this is true, check if it only contains numbers (a daily date should do so)
   for (i in 1:length(datatest)) if(a[i]){a[i] <- grepl("^[[:digit:]]+$", datatest[[i]][1,1])}
 
-    annual  <- lapply(datatest[unlist(a)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(paste0(as.character(x[, 1]),"12"), format = "%Y%m")), rename_index = "date", silent = TRUE) )
-    monthly <- lapply(datatest[unlist(m)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")), rename_index = "date", silent = TRUE) )
-    daily <- lapply(datatest[unlist(d)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")), rename_index = "date", silent = TRUE) )
+  annual  <- lapply(datatest[unlist(a)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(paste0(as.character(x[, 1]),"12"), format = "%Y%m")), rename_index = "date", silent = TRUE) )
+  monthly <- lapply(datatest[unlist(m)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.yearmon(as.character(x[, 1]), format = "%Y%m")), rename_index = "date", silent = TRUE) )
+  daily   <- lapply(datatest[unlist(d)], function(x) timetk::tk_tbl(xts::xts(as.data.frame(lapply(x[,-1,drop=FALSE],as.numeric)), order.by = as.Date(as.character(x[, 1]), format = "%Y%m%d")), rename_index = "date", silent = TRUE) )
 
+  # Replace sentinel values with NA if requested (only numeric columns, leaving date column intact)
+  if (!is.null(na_values)) {
+    replace_sentinels_tbl <- function(tbl) {
+      tbl[] <- lapply(tbl, function(col) {
+        if (is.numeric(col)) col[col %in% na_values] <- NA
+        col
+      })
+      tbl
+    }
+    annual  <- lapply(annual,  replace_sentinels_tbl)
+    monthly <- lapply(monthly, replace_sentinels_tbl)
+    daily   <- lapply(daily,   replace_sentinels_tbl)
+  }
 
   return(list(annual = annual, monthly = monthly, daily = daily))
-
 }
-
-
-
