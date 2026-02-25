@@ -38,3 +38,5 @@ vignettes/*.pdf
 
 docs
 inst/doc
+/doc/
+/Meta/

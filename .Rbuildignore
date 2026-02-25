@@ -11,8 +11,9 @@ README-FFpic_1.png$
 ^pkgdown$
 ^\.github$
 ^CRAN-SUBMISSION$
-vignettes/assetpricing.Rmd
 ^LICENSE\.md$
 ^CITATION\.cff$
 ^CLAUDE\.md$
 ^other_pckgs\.md$
+^doc$
+^Meta$
