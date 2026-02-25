@@ -2,8 +2,8 @@
 
 ### All vignettes
 
-- [Cross-Sectional Asset Pricing
-  Example](https://www.sebastianstoeckl.com/ffdownload/articles/assetpricing.md):
+- [Empirical Asset Pricing with
+  FFdownload](https://www.sebastianstoeckl.com/ffdownload/articles/assetpricing.md):
 - [How-to in the
   Tidyverse](https://www.sebastianstoeckl.com/ffdownload/articles/FFD-tibble-how-to.md):
 - [How-to

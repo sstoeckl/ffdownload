@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul></li>
@@ -44,7 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">converter</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">converter</span><span class="op">(</span><span class="va">file</span>, na_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -53,6 +53,11 @@
 
 <dl><dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>downloaded dataset</p></dd>
+
+
+<dt id="arg-na-values">na_values<a class="anchor" aria-label="anchor" href="#arg-na-values"></a></dt>
+<dd><p>numeric vector of sentinel values to replace with <code>NA</code> after parsing.
+Default <code>NULL</code> performs no replacement (original behaviour).</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+<li><a class="dropdown-item" href="../articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul>
@@ -74,24 +74,100 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sstoeckl/ffdownload" class="external-link">FFdownload</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="va">outd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"data/"</span>,<span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%F_%H-%M"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">outfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">outd</span>,<span class="st">"FFData_xts.RData"</span><span class="op">)</span></span></code></pre></div>
-<p>For a detailed how-to on checking the available data sets, as well as
-downloading and processing the data in separate steps, please check the
-<code><a href="../articles/FFD-xts-how-to.html">vignette("FFD-xts-how-to")</a></code>. In the following we download
-and process the selected files all in one step. Note, that here we
-purposefully set the “format” to <em>tibble</em>.</p>
+<span><span class="va">outd</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"data/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%F_%H-%M"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">outfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">outd</span>, <span class="st">"FFData_tbl.RData"</span><span class="op">)</span></span></code></pre></div>
+<p>This vignette covers the tidyverse workflow. For the step-by-step xts
+workflow (with separate download and processing stages), see
+<code><a href="../articles/FFD-xts-how-to.html">vignette("FFD-xts-how-to")</a></code>.</p>
+<hr>
+<div class="section level2">
+<h2 id="quick-start-ffget-new-in-v1-2-0">Quick start: <code>FFget()</code> (new in v1.2.0)<a class="anchor" aria-label="anchor" href="#quick-start-ffget-new-in-v1-2-0"></a>
+</h2>
+<p><code><a href="../reference/FFget.html">FFget()</a></code> is the simplest way to get a single dataset into
+your session. It returns a tibble directly — no intermediate
+<code>.RData</code> file, no <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code> call. Missing-value
+sentinels (<code>-99</code>, <code>-999</code>, <code>-99.99</code>) are
+converted to <code>NA</code> by default.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Monthly FF 3-factor data as a tibble, NAs handled automatically</span></span>
+<span><span class="va">ff3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFget.html">FFget</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>, subtable <span class="op">=</span> <span class="st">"Temp2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ff3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span><span class="co">#&gt;   date      Mkt.RF   SMB   HML    RF</span></span>
+<span><span class="co">#&gt;   &lt;yearmon&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Jul 1926    2.89 -2.55 -2.39  0.22</span></span>
+<span><span class="co">#&gt; ...</span></span></code></pre></div>
+<p>Use <code>frequency = NULL</code> to get all frequencies at once, or
+<code>subtable = NULL</code> to get all sub-tables within a
+frequency:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># All sub-tables for the monthly frequency</span></span>
+<span><span class="va">ff3_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFget.html">FFget</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>, subtable <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ff3_monthly</span><span class="op">)</span>   <span class="co"># e.g. "Temp2"</span></span>
+<span></span>
+<span><span class="co"># Annual data as xts</span></span>
+<span><span class="va">ff3_ann_xts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFget.html">FFget</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>, frequency <span class="op">=</span> <span class="st">"annual"</span>, format <span class="op">=</span> <span class="st">"xts"</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="dataset-discovery-fflist-and-ffmatch">Dataset discovery: <code>FFlist()</code> and
+<code>FFmatch()</code><a class="anchor" aria-label="anchor" href="#dataset-discovery-fflist-and-ffmatch"></a>
+</h2>
+<p>Before downloading, browse all available datasets and check that your
+search strings match the intended files:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFlist.html">FFlist</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">fl</span><span class="op">)</span>         <span class="co"># 100+ non-daily datasets</span></span>
+<span><span class="va">fl</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"5_Factors|Momentum"</span>, <span class="va">name</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/FFmatch.html">FFmatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Research_Data_Factors"</span>, <span class="st">"Momentum_Factor"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
+<span><span class="co">#&gt;   requested             matched                    edit_distance similarity</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                 &lt;chr&gt;                              &lt;int&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Research_Data_Factors F-F_Research_Data_Factors              3      0.87</span></span>
+<span><span class="co">#&gt; 2 Momentum_Factor       F-F_Momentum_Factor                    4      0.78</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="bulk-download-with-ffdownload-classic-api">Bulk download with <code>FFdownload()</code> (classic API)<a class="anchor" aria-label="anchor" href="#bulk-download-with-ffdownload-classic-api"></a>
+</h2>
+<p>For downloading multiple datasets in one call and/or saving a dated
+snapshot for reproducible research, use <code><a href="../reference/FFdownload.html">FFdownload()</a></code>
+directly with <code>format = "tibble"</code>.</p>
+<p>For a detailed explanation of the download / process separation, see
+<code><a href="../articles/FFD-xts-how-to.html">vignette("FFD-xts-how-to")</a></code>. Here we download and process in
+one step:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors_CSV"</span>,<span class="st">"F-F_Momentum_Factor_CSV"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>, tempd<span class="op">=</span><span class="va">outd</span>, download<span class="op">=</span><span class="cn">TRUE</span>, download_only<span class="op">=</span><span class="cn">FALSE</span>, inputlist<span class="op">=</span><span class="va">inputlist</span>, output_file <span class="op">=</span> <span class="va">outfile</span>, format <span class="op">=</span> <span class="st">"tibble"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>, tempd<span class="op">=</span><span class="va">outd</span>, download<span class="op">=</span><span class="cn">TRUE</span>, download_only<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>           inputlist<span class="op">=</span><span class="va">inputlist</span>, output_file<span class="op">=</span><span class="va">outfile</span>, format<span class="op">=</span><span class="st">"tibble"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Step 1: getting list of all the csv-zip-files!</span></span>
 <span><span class="co">#&gt; Step 2: Downloading 2 zip-files</span></span>
 <span><span class="co">#&gt; Step 3: Start processing 2 csv-files</span></span>
 <span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span></span>
 <span><span class="co">#&gt; Be aware that as of version 1.0.6 the saved object is named FFdata rather than FFdownload to not be confused with the corresponding command!</span></span></code></pre></div>
-<p>Now, we load the file and check the structure of the created list
-(after loading into the current workspace).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="new-parameters">New parameters<a class="anchor" aria-label="anchor" href="#new-parameters"></a>
+</h3>
+<p>Replace French’s missing-value codes with <code>NA</code> during
+processing:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>, tempd<span class="op">=</span><span class="va">outd</span>, download<span class="op">=</span><span class="cn">TRUE</span>, download_only<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<span>           inputlist<span class="op">=</span><span class="va">inputlist</span>, output_file<span class="op">=</span><span class="va">outfile</span>, format<span class="op">=</span><span class="st">"tibble"</span>,</span>
+<span>           na_values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">99</span>, <span class="op">-</span><span class="fl">999</span>, <span class="op">-</span><span class="fl">99.99</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Return the data list directly in addition to saving the file:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">FFdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>, tempd<span class="op">=</span><span class="va">outd</span>, download<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                     download_only<span class="op">=</span><span class="cn">FALSE</span>, inputlist<span class="op">=</span><span class="va">inputlist</span>,</span>
+<span>                     output_file<span class="op">=</span><span class="va">outfile</span>, format<span class="op">=</span><span class="st">"tibble"</span>,</span>
+<span>                     return_data<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="working-with-the-result">Working with the result<a class="anchor" aria-label="anchor" href="#working-with-the-result"></a>
+</h2>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="va">outfile</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/ls_str.html" class="external-link">ls.str</a></span><span class="op">(</span><span class="va">FFdata</span><span class="op">)</span></span>
 <span><span class="co">#&gt; x_F-F_Momentum_Factor : List of 3</span></span>
@@ -102,9 +178,8 @@ purposefully set the “format” to <em>tibble</em>.</p>
 <span><span class="co">#&gt;  $ annual :List of 1</span></span>
 <span><span class="co">#&gt;  $ monthly:List of 1</span></span>
 <span><span class="co">#&gt;  $ daily  : Named list()</span></span></code></pre></div>
-<p>To make sure, we have actually created a list of tibbles, we
-check:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>Verify that the sub-tables are tibbles:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; tibble [1,194 × 5] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ date  : 'yearmon' num [1:1194] Jul 1926 Aug 1926 Sep 1926 Oct 1926 ...</span></span>
@@ -112,12 +187,11 @@ check:</p>
 <span><span class="co">#&gt;  $ SMB   : num [1:1194] -2.55 -1.14 -1.36 -0.14 -0.11 -0.07 -0.32 0.07 -1.77 0.39 ...</span></span>
 <span><span class="co">#&gt;  $ HML   : num [1:1194] -2.39 3.81 0.05 0.82 -0.61 0.06 4.58 2.72 -2.38 0.65 ...</span></span>
 <span><span class="co">#&gt;  $ RF    : num [1:1194] 0.22 0.25 0.23 0.32 0.31 0.28 0.25 0.26 0.3 0.25 ...</span></span></code></pre></div>
-<p>In a next step we merge the two data sets. I believe there is an
-efficient way to join the data automatically, if you know it please
-email me!</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FFfour</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span> ,by<span class="op">=</span><span class="st">"date"</span><span class="op">)</span> </span>
+<p>Merge the two datasets (the <code>date</code> column is a
+<code>yearmon</code> object and serves as the join key):</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">FFfour</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span>, by<span class="op">=</span><span class="st">"date"</span><span class="op">)</span></span>
 <span><span class="va">FFfour</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;   date      Mkt.RF   SMB   HML    RF   Mom</span></span>
@@ -128,29 +202,26 @@ email me!</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Oct 1926   -<span style="color: #BB0000;">3.27</span> -<span style="color: #BB0000;">0.14</span>  0.82  0.32    <span style="color: #BB0000;">NA</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Nov 1926    2.54 -<span style="color: #BB0000;">0.11</span> -<span style="color: #BB0000;">0.61</span>  0.31    <span style="color: #BB0000;">NA</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Dec 1926    2.62 -<span style="color: #BB0000;">0.07</span>  0.06  0.28    <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
-<ol start="6" style="list-style-type: decimal">
-<li>Finally we plot wealth indices for 6 of these factors. For this, we
-first <code>pivot_longer()</code> to create a tidy data.frame, before we
-<code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter()</a></code> the data to start in 1960 and delete the risk-free
-rate. Next we calculate a wealth index and plot using
-<code>ggplot()</code>. Be aware, that the y-axis is set to a log-scale
-using <code>scale_y_log10()</code>.</li>
-</ol>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FFfour</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="va">Mkt.RF</span><span class="op">:</span><span class="va">Mom</span>,names_to<span class="op">=</span><span class="st">"FFVar"</span>,values_to<span class="op">=</span><span class="st">"FFret"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>FFret<span class="op">=</span><span class="va">FFret</span><span class="op">/</span><span class="fl">100</span>,date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># divide returns by 100</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span><span class="op">&gt;=</span><span class="st">"1960-01-01"</span>,<span class="op">!</span><span class="va">FFVar</span><span class="op">==</span><span class="st">"RF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">group_by</span><span class="op">(</span><span class="va">FFVar</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">FFVar</span>,<span class="va">date</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>FFret<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">date</span><span class="op">==</span><span class="st">"1960-01-01"</span>,<span class="fl">1</span>,<span class="va">FFret</span><span class="op">)</span>,FFretv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumprod</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="va">FFret</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>,y<span class="op">=</span><span class="va">FFretv</span>,col<span class="op">=</span><span class="va">FFVar</span>,type<span class="op">=</span><span class="va">FFVar</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span>lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span> <span class="fu">scale_y_log10</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title<span class="op">=</span><span class="st">"FF5 Factors plus Momentum"</span>, subtitle<span class="op">=</span><span class="st">"Cumulative wealth plots"</span>,ylab<span class="op">=</span><span class="st">"cum. returns"</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu">scale_colour_viridis_d</span><span class="op">(</span><span class="st">"FFvar"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span>
+<p>Plot cumulative wealth indices using <code><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer()</a></code> and
+<code>ggplot2</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">FFfour</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">Mkt.RF</span><span class="op">:</span><span class="va">Mom</span>, names_to<span class="op">=</span><span class="st">"FFVar"</span>, values_to<span class="op">=</span><span class="st">"FFret"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>FFret<span class="op">=</span><span class="va">FFret</span><span class="op">/</span><span class="fl">100</span>, date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span><span class="op">&gt;=</span><span class="st">"1960-01-01"</span>, <span class="op">!</span><span class="va">FFVar</span><span class="op">==</span><span class="st">"RF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">FFVar</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">FFVar</span>, <span class="va">date</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>FFret<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">date</span><span class="op">==</span><span class="st">"1960-01-01"</span>,<span class="fl">1</span>,<span class="va">FFret</span><span class="op">)</span>, FFretv<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumprod</a></span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="va">FFret</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>, y<span class="op">=</span><span class="va">FFretv</span>, col<span class="op">=</span><span class="va">FFVar</span>, type<span class="op">=</span><span class="va">FFVar</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"FF4 Factors"</span>, subtitle<span class="op">=</span><span class="st">"Cumulative wealth plots"</span>, ylab<span class="op">=</span><span class="st">"cum. returns"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_d</a></span><span class="op">(</span><span class="st">"FFvar"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Ignoring unknown labels:</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">ylab</span> : <span style="color: #0000BB;">"cum. returns"</span></span></span></code></pre></div>
 <p><img src="FFD-tibble-how-to_files/figure-html/FFFourPic-1.png" class="r-plt" alt="" width="100%"></p>
-  </main>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

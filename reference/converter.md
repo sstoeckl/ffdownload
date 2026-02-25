@@ -5,7 +5,7 @@
 ## Usage
 
 ``` r
-converter(file)
+converter(file, na_values = NULL)
 ```
 
 ## Arguments
@@ -13,6 +13,11 @@ converter(file)
 - file:
 
   downloaded dataset
+
+- na_values:
+
+  numeric vector of sentinel values to replace with `NA` after parsing.
+  Default `NULL` performs no replacement (original behaviour).
 
 ## Value
 

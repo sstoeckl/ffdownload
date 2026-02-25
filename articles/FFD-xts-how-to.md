@@ -1,26 +1,48 @@
 # How-to xts
 
-The following gives an example on how the process of selecting and
-retrieving the necessary files for processing is done. We start by
-specifying a target directory and target file names. Here, these are
-created in a directory that is named based on the download date within a
-folder called “data”.
+This vignette demonstrates the step-by-step
+[`FFdownload()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFdownload.md)
+workflow — browse available datasets, download, and process separately —
+using `xts` as the output format. This separation is valuable for
+reproducible research: you can save a dated snapshot of the raw zip
+files and re-process them at any time without re-downloading.
+
+For a simpler one-step approach (especially for interactive use), see
+[`vignette("FFD-tibble-how-to")`](https://www.sebastianstoeckl.com/ffdownload/articles/FFD-tibble-how-to.md)
+and the
+[`FFget()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFget.md)
+function.
 
 ``` r
 library(FFdownload)
-outd <- paste0("data/",format(Sys.time(), "%F_%H-%M"))
-outfile <- paste0(outd,"FFData_xts.RData")
-listfile <- paste0(outd,"FFList.txt")
+outd     <- paste0("data/", format(Sys.time(), "%F_%H-%M"))
+outfile  <- paste0(outd, "FFData_xts.RData")
+listfile <- paste0(outd, "FFList.txt")
 ```
 
-Next, we download a list of all available files on [Kenneth French’s
-website](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html).
-We exclude all daily files to keep the list short.
+## Step 1: Browse available datasets
+
+### Option A — `FFlist()` (recommended, new in v1.2.0)
+
+[`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFlist.md)
+returns a tidy data frame that you can filter directly:
 
 ``` r
-FFdownload(exclude_daily=TRUE,download=FALSE,download_only=TRUE,listsave=listfile)
+fl <- FFlist(exclude_daily = TRUE)
+nrow(fl)   # 100+ non-daily datasets
+head(fl)
+
+# Filter with dplyr
+library(dplyr)
+fl |> filter(grepl("Momentum|Reversal|5_Factors", name))
+```
+
+### Option B — `listsave` (classic approach, still supported)
+
+``` r
+FFdownload(exclude_daily=TRUE, download=FALSE, download_only=TRUE, listsave=listfile)
 #> Step 1: getting list of all the csv-zip-files!
-read.delim(listfile,sep = ",")[c(1:4,73:74),]
+read.delim(listfile, sep=",")[c(1:4, 73:74), ]
 #>     X                                        x
 #> 1   1        F-F_Research_Data_Factors_CSV.zip
 #> 2   2 F-F_Research_Data_Factors_weekly_CSV.zip
@@ -30,14 +52,17 @@ read.delim(listfile,sep = ",")[c(1:4,73:74),]
 #> 74 74        F-F_Momentum_Factor_daily_CSV.zip
 ```
 
-From this list we select the files to download. In our case we use the 3
-Fama-French-Factors:
+### Verifying your search strings with `FFmatch()`
 
-- “F-F_Research_Data_Factors_CSV”
-- “F-F_Momentum_Factor_CSV”
+Before downloading, use
+[`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFmatch.md)
+to confirm that your (partial) names map to the datasets you intend:
 
-and download these files without processing them (for the sake of
-showing how the package works).
+``` r
+FFmatch(c("F-F_Research_Data_Factors_CSV", "F-F_Momentum_Factor_CSV"))
+```
+
+## Step 2: Download selected datasets
 
 ``` r
 inputlist <- c("F-F_Research_Data_Factors_CSV","F-F_Momentum_Factor_CSV")
@@ -48,21 +73,52 @@ list.files(outd)
 #> [1] "F-F_Momentum_Factor_CSV.zip"       "F-F_Research_Data_Factors_CSV.zip"
 ```
 
-Now we process these downloaded files and create a final “RData” file
-with a certain list structure from it. Due to the separation of the
-downloading and processing stage this can be done repeatedly for any
-data set saved at a certain point in time in a relevant folder.
+The `action` parameter (new in v1.2.0) is equivalent and more readable:
 
 ``` r
-FFdownload(exclude_daily=TRUE, tempd=outd, download=FALSE, download_only=FALSE, inputlist=inputlist, output_file = outfile)
+FFdownload(exclude_daily=TRUE, tempd=outd, action="download_only", inputlist=inputlist)
+```
+
+The `cache_days` parameter prevents re-downloading files that are
+already fresh:
+
+``` r
+# Reuse any cached file younger than 7 days; only download if stale
+FFdownload(exclude_daily=TRUE, tempd=outd, action="download_only",
+           inputlist=inputlist, cache_days=7)
+```
+
+## Step 3: Process downloaded files
+
+``` r
+FFdownload(exclude_daily=TRUE, tempd=outd, download=FALSE, download_only=FALSE,
+           inputlist=inputlist, output_file=outfile)
 #> Step 1: getting list of all the csv-zip-files!
 #> Step 3: Start processing 2 csv-files
 #>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 #> Be aware that as of version 1.0.6 the saved object is named FFdata rather than FFdownload to not be confused with the corresponding command!
 ```
 
-Let us check the structure of the created list (after loading into the
-current workspace).
+To also get the data back directly (skipping a separate
+[`load()`](https://rdrr.io/r/base/load.html) call), add
+`return_data=TRUE`:
+
+``` r
+FFdata <- FFdownload(exclude_daily=TRUE, tempd=outd, download=FALSE,
+                     download_only=FALSE, inputlist=inputlist,
+                     output_file=outfile, return_data=TRUE)
+```
+
+To replace French’s missing-value sentinels (`-99`, `-999`, `-99.99`)
+with `NA` during processing:
+
+``` r
+FFdownload(exclude_daily=TRUE, tempd=outd, download=FALSE, download_only=FALSE,
+           inputlist=inputlist, output_file=outfile,
+           na_values=c(-99, -999, -99.99))
+```
+
+## Step 4: Inspect the result
 
 ``` r
 load(outfile)
@@ -77,17 +133,30 @@ ls.str(FFdata)
 #>  $ daily  : Named list()
 ```
 
-Now we process the data using code provided to me by [Joshua Ulrich (the
-developer of
-xts)](https://twitter.com/joshua_ulrich/status/1584950407335321601).
-Therein we merge all monthly `xts`-files, select data as off 1963,
-divide by $100$ because returns are given in percent, caluclate monthly
-returns and finally plot the resulting `xts`.
+The output is a named list. Each element corresponds to one dataset and
+contains three sub-lists: `$monthly`, `$annual`, and `$daily`. Within
+each sub-list, sub-tables are named after the section headings in
+French’s CSV. When a section has no heading the name defaults to
+`Temp1`, `Temp2`, etc. — in factor files the main returns table is
+always `Temp2`.
 
 ``` r
-monthly <- do.call(merge, lapply(FFdata, function(i) i$monthly$Temp2))
-monthly_1960 <- na.omit(monthly)["1963/"]
-monthly_returns <- cumprod(1 + monthly_1960/100) - 1
+# Discover sub-table names for the factors dataset
+names(FFdata[["x_F-F_Research_Data_Factors"]]$monthly)
+#> [1] "Temp2"
+names(FFdata[["x_F-F_Research_Data_Factors"]]$annual)
+#> [1] "annual_factors:_january-december"
+```
+
+## Step 5: Use the data
+
+Code below merges all monthly `xts` objects, trims to post-1963, and
+plots cumulative wealth indices (credit: Joshua Ulrich):
+
+``` r
+monthly         <- do.call(merge, lapply(FFdata, function(i) i$monthly$Temp2))
+monthly_1963    <- na.omit(monthly)["1963/"]
+monthly_returns <- cumprod(1 + monthly_1963 / 100) - 1
 plot(monthly_returns)
 ```
 

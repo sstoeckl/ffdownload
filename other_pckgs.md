@@ -397,16 +397,16 @@ sub-table name (e.g., factor files → `Temp2`, portfolio files →
 
 ## 5. Priority Summary
 
-| \#   | Suggestion                        | Effort  | Impact    | BC risk |
-|------|-----------------------------------|---------|-----------|---------|
-| 4.10 | HTTPS URLs                        | Trivial | Medium    | None    |
-| 4.9  | Remove `plyr`                     | Low     | Medium    | None    |
-| 4.2  | `na_values` sentinel → NA         | Low     | High      | None    |
-| 4.3  | `return_data` parameter           | Low     | High      | None    |
-| 4.1  | `FFlist()` function               | Low     | High      | None    |
-| 4.11 | Document `TempN` naming           | Low     | High      | None    |
-| 4.8  | `FFget()` convenience wrapper     | Medium  | Very high | None    |
-| 4.6  | Fuzzy match warning + `FFmatch()` | Medium  | Medium    | None    |
-| 4.5  | `cache_days` parameter            | Medium  | Medium    | None    |
-| 4.4  | `action` parameter                | Medium  | Medium    | None    |
-| 4.7  | Smarter sub-table naming          | Medium  | Medium    | None    |
+| \#   | Suggestion                                                                                            | Effort  | Impact    | BC risk |
+|------|-------------------------------------------------------------------------------------------------------|---------|-----------|---------|
+| 4.10 | HTTPS URLs                                                                                            | Trivial | Medium    | None    |
+| 4.9  | Remove `plyr`                                                                                         | Low     | Medium    | None    |
+| 4.2  | `na_values` sentinel → NA                                                                             | Low     | High      | None    |
+| 4.3  | `return_data` parameter                                                                               | Low     | High      | None    |
+| 4.1  | [`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFlist.md) function                | Low     | High      | None    |
+| 4.11 | Document `TempN` naming                                                                               | Low     | High      | None    |
+| 4.8  | [`FFget()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFget.md) convenience wrapper       | Medium  | Very high | None    |
+| 4.6  | Fuzzy match warning + [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFmatch.md) | Medium  | Medium    | None    |
+| 4.5  | `cache_days` parameter                                                                                | Medium  | Medium    | None    |
+| 4.4  | `action` parameter                                                                                    | Medium  | Medium    | None    |
+| 4.7  | Smarter sub-table naming                                                                              | Medium  | Medium    | None    |

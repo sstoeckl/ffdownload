@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Cross-Sectional Asset Pricing Example • FFdownload</title>
+<title>Empirical Asset Pricing with FFdownload • FFdownload</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cross-Sectional Asset Pricing Example">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Empirical Asset Pricing with FFdownload">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+<li><a class="dropdown-item" href="../articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul>
@@ -62,7 +62,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Cross-Sectional Asset Pricing Example</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Empirical Asset Pricing with FFdownload</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/sstoeckl/ffdownload/blob/master/vignettes/assetpricing.Rmd" class="external-link"><code>vignettes/assetpricing.Rmd</code></a></small>
@@ -71,64 +71,845 @@
 
     
     
+<blockquote>
+<p><strong>Note</strong>: This vignette requires a network connection
+and downloads several datasets from Kenneth French’s data library (~5–10
+seconds per dataset).</p>
+</blockquote>
+<p>This vignette demonstrates a complete empirical asset-pricing
+workflow using FFdownload. We cover four topics:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Time-series tests</strong> — Do CAPM or FF3 explain the 25
+Size×BM portfolio returns?</li>
+<li>
+<strong>GRS test</strong> — Joint test that all pricing errors are
+zero.</li>
+<li>
+<strong>Momentum</strong> — Why the FF3 model is not the last
+word.</li>
+<li>
+<strong>Fama-MacBeth regressions</strong> — Do factor betas price
+the cross-section? Estimated across 100 Size×BM portfolios under CAPM,
+FF3, FF4, and FF5.</li>
+</ol>
+<hr>
+<div class="section level2">
+<h2 id="data">1 Data<a class="anchor" aria-label="anchor" href="#data"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sstoeckl/ffdownload" class="external-link">FFdownload</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="va">outd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"data/"</span>,<span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%F_%H-%M"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">outfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">outd</span>,<span class="st">"FFData_xts.RData"</span><span class="op">)</span></span></code></pre></div>
-<p>For a detailed how-to on checking the available data sets, as well as
-downloading and processing the data in separate steps, please check the
-<code>vignette("FFD-how-to-xts")</code>. In the following we download
-and process the selected files all in one step. Note, that here we
-purposefully set the “format” to <em>tibble</em>.</p>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="download">1.1 Download<a class="anchor" aria-label="anchor" href="#download"></a>
+</h3>
+<p>We download everything in one call. <code>na_values</code> converts
+French’s missing-value codes (−99, −999, −99.99) to <code>NA</code>;
+<code>return_data = TRUE</code> gives us the list directly without a
+separate <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">inputlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"25_Portfolios_5x5_CSV"</span>,<span class="st">"F-F_Research_Data_Factors_CSV"</span>,<span class="st">"F-F_Momentum_Factor_CSV"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span>exclude_daily<span class="op">=</span><span class="cn">TRUE</span>, tempd<span class="op">=</span><span class="va">outd</span>, download<span class="op">=</span><span class="cn">TRUE</span>, download_only<span class="op">=</span><span class="cn">FALSE</span>, inputlist<span class="op">=</span><span class="va">inputlist</span>, output_file <span class="op">=</span> <span class="va">outfile</span>, format <span class="op">=</span> <span class="st">"tibble"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">outd</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"ffap_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"%H%M%S"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">outf</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".RData"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">inputlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"25_Portfolios_5x5"</span>,</span>
+<span>  <span class="st">"100_Portfolios_10x10"</span>,</span>
+<span>  <span class="st">"F-F_Research_Data_Factors"</span>,</span>
+<span>  <span class="st">"F-F_Research_Data_5_Factors_2x3"</span>,</span>
+<span>  <span class="st">"F-F_Momentum_Factor"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">FFdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FFdownload.html">FFdownload</a></span><span class="op">(</span></span>
+<span>  output_file   <span class="op">=</span> <span class="va">outf</span>,</span>
+<span>  tempd         <span class="op">=</span> <span class="va">outd</span>,</span>
+<span>  exclude_daily <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  download      <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  download_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  inputlist     <span class="op">=</span> <span class="va">inputlist</span>,</span>
+<span>  format        <span class="op">=</span> <span class="st">"tbl"</span>,</span>
+<span>  na_values     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">99</span>, <span class="op">-</span><span class="fl">999</span>, <span class="op">-</span><span class="fl">99.99</span><span class="op">)</span>,</span>
+<span>  return_data   <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="extract-factors">1.2 Extract factors<a class="anchor" aria-label="anchor" href="#extract-factors"></a>
+</h3>
+<p>The FF5 file contains all five factors and the risk-free rate. We use
+it as the single factor source (available from July 1963), then append
+the momentum factor.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="va">outfile</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/ls_str.html" class="external-link">ls.str</a></span><span class="op">(</span><span class="va">FFdata</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># FF5 factors: Mkt.RF, SMB, HML, RMW, CMA, RF  (start: Jul 1963)</span></span>
+<span><span class="va">ff5_raw</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_5_Factors_2x3`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span></span>
+<span></span>
+<span><span class="co"># FF3 factors back to Jul 1926 (for time-series tests)</span></span>
+<span><span class="va">ff3_raw</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span></span>
+<span></span>
+<span><span class="co"># Momentum factor</span></span>
+<span><span class="va">mom_raw</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span></span>
+<span></span>
+<span><span class="co"># Combined factor table (full history where all factors are available)</span></span>
+<span><span class="va">factors</span> <span class="op">&lt;-</span> <span class="va">ff5_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">Mkt.RF</span>, <span class="va">SMB</span>, <span class="va">HML</span>, <span class="va">RMW</span>, <span class="va">CMA</span>, <span class="va">RF</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">mom_raw</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">Mom</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Mom</span><span class="op">)</span><span class="op">)</span>    <span class="co"># Mom starts Jan 1927; FF5 starts Jul 1963 → ~Jul 1963</span></span>
+<span></span>
+<span><span class="co"># Factor table with FF3 history (no RMW/CMA/Mom)</span></span>
+<span><span class="va">factors_ff3hist</span> <span class="op">&lt;-</span> <span class="va">ff3_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">Mkt.RF</span>, <span class="va">SMB</span>, <span class="va">HML</span>, <span class="va">RF</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Factor sample:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">factors</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="st">"to"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">factors</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"—"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">factors</span><span class="op">)</span>, <span class="st">"months\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Factor sample: Jul 1963 to Dec 2025 — 750 months</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"FF3 history  :"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">factors_ff3hist</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="st">"to"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">factors_ff3hist</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="st">"—"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">factors_ff3hist</span><span class="op">)</span>, <span class="st">"months\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; FF3 history  : Jul 1926 to Dec 2025 — 1194 months</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="extract-test-portfolios">1.3 Extract test portfolios<a class="anchor" aria-label="anchor" href="#extract-test-portfolios"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FFdata</span><span class="op">$</span><span class="va">x_25_Portfolios_5x5</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">`for_portfolios_formed_in_june_of_year_tvalue_weight_average_of_be/me_calculated_for_june_of_t_to_june_of_t+1_as:sum[me(mth)_*_be(fiscal_year_t-1)_/_me(dec_t-1)]_/_sum[me(mth)]where_mth_is_a_month_from_june_of_t_to_june_of_t+1and_be(fiscal_year_t-1)_is_adjusted_for_net_stock_issuance_to_dec_t-1`</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">out2</span> <span class="op">&lt;-</span> <span class="va">FFdata</span><span class="op">$</span><span class="va">x_25_Portfolios_5x5</span><span class="op">$</span><span class="va">monthly</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">map</span><span class="op">(</span>.f <span class="op">=</span> <span class="op">~</span><span class="fu">pivot_longer</span><span class="op">(</span><span class="va">.x</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">26</span>, names_to <span class="op">=</span> <span class="st">"PFs"</span>, values_to <span class="op">=</span> <span class="st">"val"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_final</span> <span class="op">&lt;-</span> <span class="va">out2</span><span class="op">$</span><span class="va">average_value_weighted_returns</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/rename.html" class="external-link">rename</a></span><span class="op">(</span>ret_vw<span class="op">=</span><span class="va">val</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">out2</span><span class="op">$</span><span class="va">average_equal_weighted_returns</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/rename.html" class="external-link">rename</a></span><span class="op">(</span>ret_ew<span class="op">=</span><span class="va">val</span><span class="op">)</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>,<span class="st">"PFs"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">out2</span><span class="op">$</span><span class="va">number_of_firms_in_portfolios</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/rename.html" class="external-link">rename</a></span><span class="op">(</span>no<span class="op">=</span><span class="va">val</span><span class="op">)</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>,<span class="st">"PFs"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">out2</span><span class="op">$</span><span class="va">average_market_cap</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/rename.html" class="external-link">rename</a></span><span class="op">(</span>market_cap<span class="op">=</span><span class="va">val</span><span class="op">)</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>,<span class="st">"PFs"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_Factors`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>data_final2 <span class="ot">&lt;-</span> data_final <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ret_vw=</span>ret_vw<span class="sc">-</span>RF,<span class="at">ret_ew=</span>ret_ew<span class="sc">-</span>RF) <span class="sc">%&gt;%</span> </span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">estimate_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">formula</span>, <span class="va">min_obs</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">min_obs</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">regvars</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">formula</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span>    <span class="va">betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">betas</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/allnames.html" class="external-link">all.vars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="va">formula</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">betas</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Helper: find the value-weighted returns sub-table by name pattern</span></span>
+<span><span class="va">find_vw</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">monthly_list</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">monthly_list</span><span class="op">)</span></span>
+<span>  <span class="va">vw_nm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"value_weight"</span>, <span class="va">nm</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vw_nm</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Cannot find value-weighted sub-table. Available: "</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">nm</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">monthly_list</span><span class="op">[[</span><span class="va">vw_nm</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">roll_estimation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">formula</span>, <span class="va">months</span>, <span class="va">min_obs</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/plyr/man/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">betas</span> <span class="op">&lt;-</span> <span class="fu">slide_period_vec</span><span class="op">(</span></span>
-<span>    .x <span class="op">=</span> <span class="va">data</span>,</span>
-<span>    .i <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
-<span>    .period <span class="op">=</span> <span class="st">"month"</span>,</span>
-<span>    .f <span class="op">=</span> <span class="op">~</span> <span class="fu">estimate_model</span><span class="op">(</span><span class="va">.</span>, formula<span class="op">=</span><span class="va">formula</span>, min_obs<span class="op">=</span><span class="va">min_obs</span><span class="op">)</span>,</span>
-<span>    .before <span class="op">=</span> <span class="va">months</span> <span class="op">-</span> <span class="fl">1</span>,</span>
-<span>    .complete <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="co"># 25 portfolios</span></span>
+<span><span class="va">pf25_vw</span> <span class="op">&lt;-</span> <span class="fu">find_vw</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">x_25_Portfolios_5x5</span><span class="op">$</span><span class="va">monthly</span><span class="op">)</span></span>
+<span><span class="va">pf25_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pf25_vw</span><span class="op">)</span>, <span class="st">"date"</span><span class="op">)</span>     <span class="co"># 25 portfolio column names</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pf25_cols</span><span class="op">)</span> <span class="op">==</span> <span class="fl">25</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu">tibble</span><span class="op">(</span></span>
-<span>    month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">month</span><span class="op">)</span>,</span>
-<span>    beta <span class="op">=</span> <span class="va">betas</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># 100 portfolios</span></span>
+<span><span class="va">pf100_vw</span> <span class="op">&lt;-</span> <span class="fu">find_vw</span><span class="op">(</span><span class="va">FFdata</span><span class="op">$</span><span class="va">x_100_Portfolios_10x10</span><span class="op">$</span><span class="va">monthly</span><span class="op">)</span></span>
+<span><span class="va">pf100_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pf100_vw</span><span class="op">)</span>, <span class="st">"date"</span><span class="op">)</span>   <span class="co"># 100 portfolio column names</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pf100_cols</span><span class="op">)</span> <span class="op">==</span> <span class="fl">100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"25-pf column names (first 6):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pf25_cols</span>, <span class="fl">6</span><span class="op">)</span>, collapse<span class="op">=</span><span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 25-pf column names (first 6): SMALL.LoBM, ME1.BM2, ME1.BM3, ME1.BM4, SMALL.HiBM, ME2.BM1</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="build-long-panels">1.4 Build long panels<a class="anchor" aria-label="anchor" href="#build-long-panels"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Long panel for 25 portfolios — join with FF3 history</span></span>
+<span><span class="va">pf25_long</span> <span class="op">&lt;-</span> <span class="va">pf25_vw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">-</span><span class="va">date</span>, names_to <span class="op">=</span> <span class="st">"portfolio"</span>, values_to <span class="op">=</span> <span class="st">"ret"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">factors_ff3hist</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    ret_excess <span class="op">=</span> <span class="va">ret</span> <span class="op">-</span> <span class="va">RF</span>,</span>
+<span>    <span class="co"># Position-based size (S1=small → S5=large) and BM (B1=growth → B5=value) labels</span></span>
+<span>    pf_pos  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">portfolio</span>, levels <span class="op">=</span> <span class="va">pf25_cols</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    size_q  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">pf_pos</span> <span class="op">/</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>    bm_q    <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="va">pf_pos</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span>
+<span>    size_lbl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">size_q</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Small"</span>,<span class="st">"S2"</span>,<span class="st">"S3"</span>,<span class="st">"S4"</span>,<span class="st">"Large"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    bm_lbl   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">bm_q</span>,   labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Growth"</span>,<span class="st">"B2"</span>,<span class="st">"B3"</span>,<span class="st">"B4"</span>,<span class="st">"Value"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">ret_excess</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Mkt.RF</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Long panel for 100 portfolios — join with FF5+Mom (1963+)</span></span>
+<span><span class="va">pf100_long</span> <span class="op">&lt;-</span> <span class="va">pf100_vw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">-</span><span class="va">date</span>, names_to <span class="op">=</span> <span class="st">"portfolio"</span>, values_to <span class="op">=</span> <span class="st">"ret"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">factors</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    ret_excess <span class="op">=</span> <span class="va">ret</span> <span class="op">-</span> <span class="va">RF</span>,</span>
+<span>    pf_pos  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">portfolio</span>, levels <span class="op">=</span> <span class="va">pf100_cols</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    size_q  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling</a></span><span class="op">(</span><span class="va">pf_pos</span> <span class="op">/</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    bm_q    <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="va">pf_pos</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">ret_excess</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Mom</span><span class="op">)</span><span class="op">)</span>   <span class="co"># FF5+Mom sample (Jul 1963+)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"25-pf panel: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pf25_long</span><span class="op">)</span>,  <span class="st">"rows,"</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">pf25_long</span><span class="op">$</span><span class="va">portfolio</span><span class="op">)</span>,  <span class="st">"portfolios\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 25-pf panel:  29850 rows, 25 portfolios</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"100-pf panel:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pf100_long</span><span class="op">)</span>, <span class="st">"rows,"</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">pf100_long</span><span class="op">$</span><span class="va">portfolio</span><span class="op">)</span>, <span class="st">"portfolios\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 100-pf panel: 74828 rows, 100 portfolios</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="time-series-tests-25-sizebm-portfolios">2 Time-Series Tests: 25 Size×BM Portfolios<a class="anchor" aria-label="anchor" href="#time-series-tests-25-sizebm-portfolios"></a>
+</h2>
+<div class="section level3">
+<h3 id="capm-large-and-structured-pricing-errors">2.1 CAPM: large and structured pricing errors<a class="anchor" aria-label="anchor" href="#capm-large-and-structured-pricing-errors"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ts_capm</span> <span class="op">&lt;-</span> <span class="va">pf25_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nest_by.html" class="external-link">nest_by</a></span><span class="op">(</span><span class="va">portfolio</span>, <span class="va">size_q</span>, <span class="va">bm_q</span>, <span class="va">size_lbl</span>, <span class="va">bm_lbl</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    fit       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">ret_excess</span> <span class="op">~</span> <span class="va">Mkt.RF</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    alpha     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    alpha_se  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"Std. Error"</span><span class="op">]</span>,</span>
+<span>    alpha_t   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"t value"</span><span class="op">]</span>,</span>
+<span>    beta_mkt  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"Mkt.RF"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    r2        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>,</span>
+<span>    n_obs     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">data</span>, <span class="op">-</span><span class="va">fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"CAPM — mean |alpha|:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">ts_capm</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"%/month\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; CAPM — mean |alpha|: 0.151 %/month</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"       significant alphas (|t| &gt; 2):"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">ts_capm</span><span class="op">$</span><span class="va">alpha_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"of"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ts_capm</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        significant alphas (|t| &gt; 2): 4 of 25</span></span></code></pre></div>
+<p><strong>CAPM alpha heat map</strong> (% per month; red = positive
+alpha, blue = negative):</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ts_capm</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bm_lbl</span>, y <span class="op">=</span> <span class="va">size_lbl</span>, fill <span class="op">=</span> <span class="va">alpha</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.2f\n(%.1f)"</span>, <span class="va">alpha</span>, <span class="va">alpha_t</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            size <span class="op">=</span> <span class="fl">2.8</span>, lineheight <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#4575b4"</span>, mid <span class="op">=</span> <span class="st">"white"</span>, high <span class="op">=</span> <span class="st">"#d73027"</span>,</span>
+<span>                       midpoint <span class="op">=</span> <span class="fl">0</span>, name <span class="op">=</span> <span class="st">"α (%/mo)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title    <span class="op">=</span> <span class="st">"CAPM Alphas — 25 Size×BM Portfolios"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Cell: alpha (t-stat); sample: Jul 1926 – present"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Book-to-Market Quintile"</span>, y <span class="op">=</span> <span class="st">"Size Quintile"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="assetpricing_files/figure-html/plot_capm_alpha-1.png" class="r-plt" alt="" width="768"></p>
+<p>The heat map shows a <strong>value tilt</strong> in CAPM alphas:
+portfolios in the highest BM quintile (value) tend to have positive
+alphas, while growth portfolios cluster near zero or negative. However,
+with the full sample stretching back to July 1926, the pattern is
+noisier than in the original Fama-French (1993) paper, which used only
+1963–1991 data — a period when the size and value premia were
+particularly strong. CAPM cannot account for these premia, but
+statistical significance is limited: only 4 of 25 alphas clear the |t|
+&gt; 2 threshold at conventional levels.</p>
+</div>
+<div class="section level3">
+<h3 id="ff3-modest-improvement-over-the-full-sample">2.2 FF3: modest improvement over the full sample<a class="anchor" aria-label="anchor" href="#ff3-modest-improvement-over-the-full-sample"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ts_ff3</span> <span class="op">&lt;-</span> <span class="va">pf25_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nest_by.html" class="external-link">nest_by</a></span><span class="op">(</span><span class="va">portfolio</span>, <span class="va">size_q</span>, <span class="va">bm_q</span>, <span class="va">size_lbl</span>, <span class="va">bm_lbl</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    fit      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">ret_excess</span> <span class="op">~</span> <span class="va">Mkt.RF</span> <span class="op">+</span> <span class="va">SMB</span> <span class="op">+</span> <span class="va">HML</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    alpha    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    alpha_se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"Std. Error"</span><span class="op">]</span>,</span>
+<span>    alpha_t  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"t value"</span><span class="op">]</span>,</span>
+<span>    b_mkt    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"Mkt.RF"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    b_smb    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"SMB"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    b_hml    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"HML"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    r2       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">data</span>, <span class="op">-</span><span class="va">fit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"FF3 — mean |alpha|:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">ts_ff3</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"%/month\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; FF3 — mean |alpha|: 0.114 %/month</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"      significant alphas (|t| &gt; 2):"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">ts_ff3</span><span class="op">$</span><span class="va">alpha_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"of"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ts_ff3</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       significant alphas (|t| &gt; 2): 7 of 25</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ts_ff3</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bm_lbl</span>, y <span class="op">=</span> <span class="va">size_lbl</span>, fill <span class="op">=</span> <span class="va">alpha</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.2f\n(%.1f)"</span>, <span class="va">alpha</span>, <span class="va">alpha_t</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            size <span class="op">=</span> <span class="fl">2.8</span>, lineheight <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient2</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"#4575b4"</span>, mid <span class="op">=</span> <span class="st">"white"</span>, high <span class="op">=</span> <span class="st">"#d73027"</span>,</span>
+<span>                       midpoint <span class="op">=</span> <span class="fl">0</span>, name <span class="op">=</span> <span class="st">"α (%/mo)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title    <span class="op">=</span> <span class="st">"FF3 Alphas — 25 Size×BM Portfolios"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Cell: alpha (t-stat); sample: Jul 1926 – present"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Book-to-Market Quintile"</span>, y <span class="op">=</span> <span class="st">"Size Quintile"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span></code></pre></div>
+<p><img src="assetpricing_files/figure-html/plot_ff3_alpha-1.png" class="r-plt" alt="" width="768"></p>
+<p>When run over the <strong>full French library sample</strong> (July
+1926 to present), the FF3 improvement is more muted than the original
+1993 paper suggests. Mean absolute alpha falls from 0.151 to 0.114
+%/month — a 25% reduction. Notably, the number of <em>statistically
+significant</em> alphas may increase rather than decrease under FF3: the
+three factors fit some portfolios well while exposing pricing errors in
+others that CAPM had masked by a higher residual variance. The
+<strong>value premium has weakened substantially post-2004</strong>, a
+well-documented phenomenon (Fama and French 2015; Hou, Xue and Zhang
+2015), which attenuates FF3’s advantage when the recent decades are
+included.</p>
+</div>
+<div class="section level3">
+<h3 id="side-by-side-comparison">2.3 Side-by-side comparison<a class="anchor" aria-label="anchor" href="#side-by-side-comparison"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">ts_capm</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"CAPM"</span><span class="op">)</span>,</span>
+<span>  <span class="va">ts_ff3</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"FF3"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    sig <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">alpha_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span>, <span class="st">"p &lt; 0.05"</span>, <span class="st">"n.s."</span><span class="op">)</span>,</span>
+<span>    label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="va">size_q</span>, <span class="st">"B"</span>, <span class="va">bm_q</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">label</span>, <span class="va">bm_q</span> <span class="op">+</span> <span class="op">(</span><span class="va">size_q</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>             y <span class="op">=</span> <span class="va">alpha</span>, colour <span class="op">=</span> <span class="va">model</span>, shape <span class="op">=</span> <span class="va">sig</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, colour <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_errorbar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">alpha</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">alpha_se</span>, ymax <span class="op">=</span> <span class="va">alpha</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">alpha_se</span><span class="op">)</span>,</span>
+<span>                width <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>CAPM <span class="op">=</span> <span class="st">"#e41a1c"</span>, FF3 <span class="op">=</span> <span class="st">"#377eb8"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p &lt; 0.05"</span> <span class="op">=</span> <span class="fl">16</span>, <span class="st">"n.s."</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title    <span class="op">=</span> <span class="st">"Pricing Errors: CAPM vs FF3"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Portfolios ordered by BM within size quintile; bars = ±2 SE"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Portfolio (S = size, B = book-to-market quintile)"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Alpha (%/month)"</span>, colour <span class="op">=</span> <span class="st">"Model"</span>, shape <span class="op">=</span> <span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">90</span>, vjust <span class="op">=</span> <span class="fl">0.5</span>, size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="assetpricing_files/figure-html/plot_alpha_comparison-1.png" class="r-plt" alt="" width="768"></p>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="grs-test">3 GRS Test<a class="anchor" aria-label="anchor" href="#grs-test"></a>
+</h2>
+<p>The <strong>Gibbons, Ross and Shanken (1989)</strong> test checks
+whether all N pricing errors are jointly zero. The statistic is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">GRS</mtext><mo>=</mo><mfrac><mrow><mi>T</mi><mo>−</mo><mi>N</mi><mo>−</mo><mi>K</mi></mrow><mi>N</mi></mfrac><mo>⋅</mo><mfrac><mrow><mover><mi>𝛂</mi><mo accent="true">̂</mo></mover><mi>′</mi><msup><mover><mi>𝚺</mi><mo accent="true">̂</mo></mover><mrow><mo>−</mo><mn>1</mn></mrow></msup><mover><mi>𝛂</mi><mo accent="true">̂</mo></mover></mrow><mrow><mn>1</mn><mo>+</mo><msub><mover><mi>𝛍</mi><mo accent="true">̂</mo></mover><mi>f</mi></msub><mi>′</mi><msubsup><mover><mi>𝛀</mi><mo accent="true">̂</mo></mover><mi>f</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mover><mi>𝛍</mi><mo accent="true">̂</mo></mover><mi>f</mi></msub></mrow></mfrac><mspace width="0.278em"></mspace><mo>∼</mo><mspace width="0.278em"></mspace><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>,</mo><mspace width="0.278em"></mspace><mi>T</mi><mo>−</mo><mi>N</mi><mo>−</mo><mi>K</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{GRS} = \frac{T - N - K}{N} \cdot
+  \frac{\hat{\boldsymbol{\alpha}}'\hat{\boldsymbol{\Sigma}}^{-1}\hat{\boldsymbol{\alpha}}}
+       {1 + \hat{\boldsymbol{\mu}}_f'\hat{\boldsymbol{\Omega}}_f^{-1}\hat{\boldsymbol{\mu}}_f}
+\;\sim\; F(N,\; T-N-K)</annotation></semantics></math></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grs_test</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">returns_xmat</span>, <span class="va">factors_xmat</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># returns_xmat : T × N matrix of excess portfolio returns (no NAs)</span></span>
+<span>  <span class="co"># factors_xmat : T × K matrix of factor excess returns</span></span>
+<span>  <span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">returns_xmat</span><span class="op">)</span>; <span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">returns_xmat</span><span class="op">)</span>; <span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">factors_xmat</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="cn">T</span> <span class="op">&gt;</span> <span class="va">N</span> <span class="op">+</span> <span class="va">K</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># OLS: Y = X*B + E  where X = [1 | factors]</span></span>
+<span>  <span class="va">X</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">factors_xmat</span><span class="op">)</span></span>
+<span>  <span class="va">B</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">returns_xmat</span><span class="op">)</span><span class="op">)</span>  <span class="co"># (K+1) × N</span></span>
+<span>  <span class="va">E</span>     <span class="op">&lt;-</span> <span class="va">returns_xmat</span> <span class="op">-</span> <span class="va">X</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">B</span>                           <span class="co"># T × N residuals</span></span>
+<span>  <span class="va">alpha</span> <span class="op">&lt;-</span> <span class="va">B</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>                                           <span class="co"># N intercepts</span></span>
+<span></span>
+<span>  <span class="co"># MLE residual covariance</span></span>
+<span>  <span class="va">Sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="va">E</span><span class="op">)</span> <span class="op">/</span> <span class="cn">T</span></span>
+<span></span>
+<span>  <span class="co"># Factor Sharpe ratio squared</span></span>
+<span>  <span class="va">mu_f</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">factors_xmat</span><span class="op">)</span></span>
+<span>  <span class="va">Omega</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="va">factors_xmat</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="cn">T</span></span>
+<span>  <span class="va">sr2</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mu_f</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">Omega</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">mu_f</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># GRS statistic</span></span>
+<span>  <span class="va">grs_stat</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="cn">T</span> <span class="op">-</span> <span class="va">N</span> <span class="op">-</span> <span class="va">K</span><span class="op">)</span> <span class="op">/</span> <span class="va">N</span><span class="op">)</span> <span class="op">*</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">Sigma</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">alpha</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">sr2</span><span class="op">)</span></span>
+<span>  <span class="va">p_val</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf</a></span><span class="op">(</span><span class="va">grs_stat</span>, df1 <span class="op">=</span> <span class="va">N</span>, df2 <span class="op">=</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">N</span> <span class="op">-</span> <span class="va">K</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>GRS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">grs_stat</span>, <span class="fl">3</span><span class="op">)</span>, p_value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">p_val</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>       df1 <span class="op">=</span> <span class="va">N</span>, df2 <span class="op">=</span> <span class="cn">T</span> <span class="op">-</span> <span class="va">N</span> <span class="op">-</span> <span class="va">K</span>,</span>
+<span>       mean_abs_alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-  </main>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Build wide matrices aligned to the same dates</span></span>
+<span><span class="va">pf25_wide</span> <span class="op">&lt;-</span> <span class="va">pf25_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">portfolio</span>, <span class="va">ret_excess</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">portfolio</span>, values_from <span class="op">=</span> <span class="va">ret_excess</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Merge factors on same dates and drop any rows with NAs</span></span>
+<span><span class="va">pf25_merged</span> <span class="op">&lt;-</span> <span class="va">pf25_wide</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">factors_ff3hist</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">Mkt.RF</span>, <span class="va">SMB</span>, <span class="va">HML</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ret_mat_25</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf25_merged</span><span class="op">[</span>, <span class="va">pf25_cols</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">capm_f_mat</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf25_merged</span><span class="op">[</span>, <span class="st">"Mkt.RF"</span>,  drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">ff3_f_mat</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf25_merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">grs_capm</span> <span class="op">&lt;-</span> <span class="fu">grs_test</span><span class="op">(</span><span class="va">ret_mat_25</span>, <span class="va">capm_f_mat</span><span class="op">)</span></span>
+<span><span class="va">grs_ff3</span>  <span class="op">&lt;-</span> <span class="fu">grs_test</span><span class="op">(</span><span class="va">ret_mat_25</span>, <span class="va">ff3_f_mat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  Model                 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CAPM"</span>, <span class="st">"FF3"</span><span class="op">)</span>,</span>
+<span>  `GRS statistic`       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">grs_capm</span><span class="op">$</span><span class="va">GRS</span>,           <span class="va">grs_ff3</span><span class="op">$</span><span class="va">GRS</span><span class="op">)</span>,</span>
+<span>  `p-value`             <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">grs_capm</span><span class="op">$</span><span class="va">p_value</span>,        <span class="va">grs_ff3</span><span class="op">$</span><span class="va">p_value</span><span class="op">)</span>,</span>
+<span>  `F(N, T-N-K)`         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"F(%d,%d)"</span>, <span class="va">grs_capm</span><span class="op">$</span><span class="va">df1</span>, <span class="va">grs_capm</span><span class="op">$</span><span class="va">df2</span><span class="op">)</span>,</span>
+<span>                             <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"F(%d,%d)"</span>, <span class="va">grs_ff3</span><span class="op">$</span><span class="va">df1</span>,  <span class="va">grs_ff3</span><span class="op">$</span><span class="va">df2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  `Mean |α| (%/mo)`     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">grs_capm</span><span class="op">$</span><span class="va">mean_abs_alpha</span>, <span class="va">grs_ff3</span><span class="op">$</span><span class="va">mean_abs_alpha</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span>, align <span class="op">=</span> <span class="st">"lrrrr"</span>,</span>
+<span>               caption <span class="op">=</span> <span class="st">"GRS Test — 25 Size×BM Portfolios"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>GRS Test — 25 Size×BM Portfolios</caption>
+<thead><tr class="header">
+<th align="left">Model</th>
+<th align="right">GRS statistic</th>
+<th align="right">p-value</th>
+<th align="right">F(N, T-N-K)</th>
+<th align="right">Mean |α| (%/mo)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">CAPM</td>
+<td align="right">3.309</td>
+<td align="right">0</td>
+<td align="right">F(25,1168)</td>
+<td align="right">0.1510</td>
+</tr>
+<tr class="even">
+<td align="left">FF3</td>
+<td align="right">3.277</td>
+<td align="right">0</td>
+<td align="right">F(25,1166)</td>
+<td align="right">0.1139</td>
+</tr>
+</tbody>
+</table>
+<p>Both models are <strong>strongly rejected</strong> by the GRS test
+(both p-values ≈ 0). Over the full historical sample the two GRS
+statistics are close in magnitude (3.309 for CAPM vs 3.277 for FF3),
+reflecting the fact that the FF3 factors were constructed to price the
+<strong>1963–1991</strong> period. Extending the sample back to 1926 and
+forward to the present — where the value premium has weakened
+considerably — limits how much SMB and HML can reduce the joint pricing
+errors relative to CAPM. In shorter sub-samples aligned with the
+original paper, FF3 typically shows a much larger improvement.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="momentum-the-anomaly-ff3-cannot-explain">4 Momentum: The Anomaly FF3 Cannot Explain<a class="anchor" aria-label="anchor" href="#momentum-the-anomaly-ff3-cannot-explain"></a>
+</h2>
+<p>The WML (Winners Minus Losers) factor from Carhart (1997) delivers a
+large positive return that CAPM and FF3 fail to explain.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># WML time series</span></span>
+<span><span class="va">wml</span> <span class="op">&lt;-</span> <span class="va">mom_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">Mom</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">factors_ff3hist</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Mom</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Mkt.RF</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Average WML return with t-statistic</span></span>
+<span><span class="va">wml_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">wml</span><span class="op">$</span><span class="va">Mom</span><span class="op">)</span></span>
+<span><span class="va">wml_t</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test</a></span><span class="op">(</span><span class="va">wml</span><span class="op">$</span><span class="va">Mom</span><span class="op">)</span><span class="op">$</span><span class="va">statistic</span></span>
+<span></span>
+<span><span class="co"># CAPM alpha for WML</span></span>
+<span><span class="va">fit_wml_capm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Mom</span> <span class="op">~</span> <span class="va">Mkt.RF</span>, data <span class="op">=</span> <span class="va">wml</span><span class="op">)</span></span>
+<span><span class="co"># FF3 alpha for WML</span></span>
+<span><span class="va">fit_wml_ff3</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Mom</span> <span class="op">~</span> <span class="va">Mkt.RF</span> <span class="op">+</span> <span class="va">SMB</span> <span class="op">+</span> <span class="va">HML</span>, data <span class="op">=</span> <span class="va">wml</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mom_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  Measure                  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mean WML return"</span>, <span class="st">"CAPM alpha"</span>, <span class="st">"FF3 alpha"</span><span class="op">)</span>,</span>
+<span>  `Estimate (%/mo)`        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">wml_mean</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_wml_capm</span><span class="op">)</span><span class="op">[</span><span class="st">"(Intercept)"</span><span class="op">]</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_wml_ff3</span><span class="op">)</span> <span class="op">[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  `t-statistic`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">wml_t</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_wml_capm</span><span class="op">)</span><span class="op">$</span><span class="va">coef</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"t value"</span><span class="op">]</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_wml_ff3</span><span class="op">)</span> <span class="op">$</span><span class="va">coef</span><span class="op">[</span><span class="st">"(Intercept)"</span>, <span class="st">"t value"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">mom_summary</span>, digits <span class="op">=</span> <span class="fl">3</span>, align <span class="op">=</span> <span class="st">"lrr"</span>,</span>
+<span>             caption <span class="op">=</span> <span class="st">"Momentum (WML) — Mean Return and Pricing Errors"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Momentum (WML) — Mean Return and Pricing Errors</caption>
+<thead><tr class="header">
+<th align="left">Measure</th>
+<th align="right">Estimate (%/mo)</th>
+<th align="right">t-statistic</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean WML return</td>
+<td align="right">0.608</td>
+<td align="right">4.474</td>
+</tr>
+<tr class="even">
+<td align="left">CAPM alpha</td>
+<td align="right">0.818</td>
+<td align="right">6.365</td>
+</tr>
+<tr class="odd">
+<td align="left">FF3 alpha</td>
+<td align="right">0.931</td>
+<td align="right">7.761</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Rolling 5-year average WML return</span></span>
+<span><span class="va">wml</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>date_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         roll_mean <span class="op">=</span> <span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/rollapply.html" class="external-link">rollapply</a></span><span class="op">(</span><span class="va">Mom</span>, width <span class="op">=</span> <span class="fl">60</span>, FUN <span class="op">=</span> <span class="va">mean</span>,</span>
+<span>                                    fill <span class="op">=</span> <span class="cn">NA</span>, align <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Mom</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"grey80"</span>, width <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">roll_mean</span><span class="op">)</span>, colour <span class="op">=</span> <span class="st">"#e41a1c"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title    <span class="op">=</span> <span class="st">"WML Momentum Factor"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Bars = monthly return; red line = 60-month rolling average"</span>,</span>
+<span>       x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Return (%/month)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="assetpricing_files/figure-html/momentum_plot-1.png" class="r-plt" alt="" width="768"></p>
+<p>The FF3 alpha of WML is large and highly significant — the
+three-factor model has no mechanism to price momentum. This motivates
+the Carhart four-factor model and, later, the FF5 model (which also
+fails to explain momentum).</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="fama-macbeth-cross-sectional-regressions">5 Fama-MacBeth Cross-Sectional Regressions<a class="anchor" aria-label="anchor" href="#fama-macbeth-cross-sectional-regressions"></a>
+</h2>
+<p>The <strong>Fama and MacBeth (1973)</strong> approach tests whether
+factor betas are priced in the cross-section:</p>
+<p><strong>First pass</strong> — for each portfolio
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
+estimate factor betas via full-sample time-series regression:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>−</mo><msub><mi>r</mi><mrow><mi>f</mi><mi>t</mi></mrow></msub><mo>=</mo><msub><mi>α</mi><mi>i</mi></msub><mo>+</mo><msub><mi>𝛃</mi><mi>i</mi></msub><mi>′</mi><msub><mi>𝐟</mi><mi>t</mi></msub><mo>+</mo><msub><mi>ε</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">r_{it} - r_{ft} = \alpha_i + \boldsymbol{\beta}_i'\mathbf{f}_t + \varepsilon_{it}</annotation></semantics></math></p>
+<p><strong>Second pass</strong> — each month
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
+regress cross-sectional excess returns on the estimated betas:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>−</mo><msub><mi>r</mi><mrow><mi>f</mi><mi>t</mi></mrow></msub><mo>=</mo><msub><mi>λ</mi><mrow><mn>0</mn><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>𝛌</mi><mi>t</mi></msub><mi>′</mi><msub><mover><mi>𝛃</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>+</mo><msub><mi>u</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">r_{it} - r_{ft} = \lambda_{0t} + \boldsymbol{\lambda}_t'\hat{\boldsymbol{\beta}}_i + u_{it}</annotation></semantics></math></p>
+<p>Average the monthly
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mi>t</mi></msub><annotation encoding="application/x-tex">\lambda_t</annotation></semantics></math>
+estimates and compute <strong>Newey-West standard errors</strong> to
+account for serial correlation in the pricing errors.</p>
+<div class="section level3">
+<h3 id="helper-functions">5.1 Helper functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Newey-West standard error for the mean of a time series</span></span>
+<span><span class="va">nw_se</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">lags</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span>   <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="cn">T</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">lags</span><span class="op">)</span><span class="op">)</span> <span class="va">lags</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fl">4</span> <span class="op">*</span> <span class="op">(</span><span class="cn">T</span> <span class="op">/</span> <span class="fl">100</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">2</span><span class="op">/</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">xd</span>  <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">v</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">xd</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="cn">T</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">lags</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">l</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">lags</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">v</span> <span class="op">&lt;-</span> <span class="va">v</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">l</span> <span class="op">/</span> <span class="op">(</span><span class="va">lags</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">xd</span><span class="op">[</span><span class="op">(</span><span class="va">l</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="cn">T</span><span class="op">]</span> <span class="op">*</span> <span class="va">xd</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="cn">T</span><span class="op">-</span><span class="va">l</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="cn">T</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">v</span> <span class="op">/</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Full FMB procedure</span></span>
+<span><span class="co"># returns_mat : T × N matrix of excess returns</span></span>
+<span><span class="co"># factors_mat : T × K matrix of factors</span></span>
+<span><span class="va">fmb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">returns_mat</span>, <span class="va">factors_mat</span>, <span class="va">factor_names</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="cn">T</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">returns_mat</span><span class="op">)</span>; <span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">returns_mat</span><span class="op">)</span>; <span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">factors_mat</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">factor_names</span><span class="op">)</span><span class="op">)</span> <span class="va">factor_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">factors_mat</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># ── First pass: full-sample OLS betas ───────────────────────────────────────</span></span>
+<span>  <span class="va">X_ts</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">factors_mat</span><span class="op">)</span></span>
+<span>  <span class="va">B_ts</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="va">X_ts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">crossprod</a></span><span class="op">(</span><span class="va">X_ts</span>, <span class="va">returns_mat</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">betas</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">B_ts</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span>   <span class="co"># N × K</span></span>
+<span></span>
+<span>  <span class="co"># ── Second pass: monthly cross-sectional regressions ────────────────────────</span></span>
+<span>  <span class="va">X_cs</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">betas</span><span class="op">)</span>              <span class="co"># N × (K+1)</span></span>
+<span>  <span class="va">gammas</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA_real_</span>, nrow <span class="op">=</span> <span class="cn">T</span>, ncol <span class="op">=</span> <span class="va">K</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">y_t</span>   <span class="op">&lt;-</span> <span class="va">returns_mat</span><span class="op">[</span><span class="va">t</span>, <span class="op">]</span></span>
+<span>    <span class="va">ok</span>    <span class="op">&lt;-</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">y_t</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ok</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">K</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">gammas</span><span class="op">[</span><span class="va">t</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lmfit.html" class="external-link">lm.fit</a></span><span class="op">(</span><span class="va">X_cs</span><span class="op">[</span><span class="va">ok</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="va">y_t</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="co"># ── Average lambdas + Newey-West t-stats ────────────────────────────────────</span></span>
+<span>  <span class="va">lambda_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Intercept"</span>, <span class="va">factor_names</span><span class="op">)</span></span>
+<span>  <span class="va">lam_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">gammas</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">lam_se</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">gammas</span>, <span class="fl">2</span>, <span class="va">nw_se</span><span class="op">)</span></span>
+<span>  <span class="va">lam_t</span>    <span class="op">&lt;-</span> <span class="va">lam_mean</span> <span class="op">/</span> <span class="va">lam_se</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>    term       <span class="op">=</span> <span class="va">lambda_names</span>,</span>
+<span>    lambda     <span class="op">=</span> <span class="va">lam_mean</span>,</span>
+<span>    nw_se      <span class="op">=</span> <span class="va">lam_se</span>,</span>
+<span>    t_stat     <span class="op">=</span> <span class="va">lam_t</span>,</span>
+<span>    signif     <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">lam_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">3.29</span> <span class="op">~</span> <span class="st">"***"</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">lam_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2.58</span> <span class="op">~</span> <span class="st">"**"</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">lam_t</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1.96</span> <span class="op">~</span> <span class="st">"*"</span>,</span>
+<span>      <span class="cn">TRUE</span>               <span class="op">~</span> <span class="st">""</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="prepare-100-portfolio-matrices">5.2 Prepare 100-portfolio matrices<a class="anchor" aria-label="anchor" href="#prepare-100-portfolio-matrices"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Wide matrices aligned to the same dates (FF5+Mom sample, Jul 1963+)</span></span>
+<span><span class="va">pf100_wide</span> <span class="op">&lt;-</span> <span class="va">pf100_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">portfolio</span>, <span class="va">ret_excess</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">portfolio</span>, values_from <span class="op">=</span> <span class="va">ret_excess</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pf100_merged</span> <span class="op">&lt;-</span> <span class="va">pf100_wide</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">factors</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ret100</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">[</span>, <span class="va">pf100_cols</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">f_capm</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">[</span>, <span class="st">"Mkt.RF"</span>,                    drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">f_ff3</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">f_ff4</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"Mom"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">f_ff5</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"RMW"</span>,<span class="st">"CMA"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"FMB sample:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="st">"to"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span>, <span class="st">"—"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pf100_merged</span><span class="op">)</span>, <span class="st">"months\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; FMB sample: Jul 1963 to Dec 2025 — 630 months</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"100 portfolios x"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">ret100</span><span class="op">)</span>, <span class="st">"columns (check: should be 100)\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 100 portfolios x 100 columns (check: should be 100)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="run-fmb-for-all-four-models">5.3 Run FMB for all four models<a class="anchor" aria-label="anchor" href="#run-fmb-for-all-four-models"></a>
+</h3>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res_capm</span> <span class="op">&lt;-</span> <span class="fu">fmb</span><span class="op">(</span><span class="va">ret100</span>, <span class="va">f_capm</span>, <span class="st">"Mkt.RF"</span><span class="op">)</span></span>
+<span><span class="va">res_ff3</span>  <span class="op">&lt;-</span> <span class="fu">fmb</span><span class="op">(</span><span class="va">ret100</span>, <span class="va">f_ff3</span>,  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res_ff4</span>  <span class="op">&lt;-</span> <span class="fu">fmb</span><span class="op">(</span><span class="va">ret100</span>, <span class="va">f_ff4</span>,  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"Mom"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res_ff5</span>  <span class="op">&lt;-</span> <span class="fu">fmb</span><span class="op">(</span><span class="va">ret100</span>, <span class="va">f_ff5</span>,  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"RMW"</span>,<span class="st">"CMA"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="results">5.4 Results<a class="anchor" aria-label="anchor" href="#results"></a>
+</h3>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># All factor names across all models</span></span>
+<span><span class="va">all_terms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Intercept"</span>,<span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"Mom"</span>,<span class="st">"RMW"</span>,<span class="st">"CMA"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fmt_col</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">res</span>, <span class="va">model_name</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.3f%s (%.2f)"</span>, <span class="va">lambda</span>, <span class="va">signif</span>, <span class="va">t_stat</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">term</span>, <span class="va">cell</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">right_join</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>term <span class="op">=</span> <span class="va">all_terms</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"term"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cell <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="va">cell</span>, <span class="st">"\u2014"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="va">model_name</span> <span class="op">:=</span> <span class="va">cell</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">fmb_table</span> <span class="op">&lt;-</span> <span class="fu">fmt_col</span><span class="op">(</span><span class="va">res_capm</span>, <span class="st">"CAPM"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu">fmt_col</span><span class="op">(</span><span class="va">res_ff3</span>, <span class="st">"FF3"</span><span class="op">)</span>,  by <span class="op">=</span> <span class="st">"term"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu">fmt_col</span><span class="op">(</span><span class="va">res_ff4</span>, <span class="st">"FF4"</span><span class="op">)</span>,  by <span class="op">=</span> <span class="st">"term"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="fu">fmt_col</span><span class="op">(</span><span class="va">res_ff5</span>, <span class="st">"FF5"</span><span class="op">)</span>,  by <span class="op">=</span> <span class="st">"term"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>Factor <span class="op">=</span> <span class="va">term</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">fmb_table</span>, align <span class="op">=</span> <span class="st">"lcccc"</span>,</span>
+<span>             caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>               <span class="st">"Fama-MacBeth Results — 100 Size x BM Portfolios."</span>,</span>
+<span>               <span class="st">"Entries: lambda estimate (significance stars) (NW t-stat)."</span>,</span>
+<span>               <span class="st">"*, **, *** = |t| &gt; 1.96, 2.58, 3.29."</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Fama-MacBeth Results — 100 Size x BM Portfolios. Entries:
+lambda estimate (significance stars) (NW t-stat). <em>, <strong>,
+</strong></em> = |t| &gt; 1.96, 2.58, 3.29.</caption>
+<colgroup>
+<col width="12%">
+<col width="21%">
+<col width="21%">
+<col width="21%">
+<col width="21%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Factor</th>
+<th align="center">CAPM</th>
+<th align="center">FF3</th>
+<th align="center">FF4</th>
+<th align="center">FF5</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Intercept</td>
+<td align="center">1.319*** (3.73)</td>
+<td align="center">1.033*** (4.41)</td>
+<td align="center">1.033*** (4.43)</td>
+<td align="center">0.956*** (3.86)</td>
+</tr>
+<tr class="even">
+<td align="left">Mkt.RF</td>
+<td align="center">-0.488 (-1.21)</td>
+<td align="center">-0.319 (-1.27)</td>
+<td align="center">-0.318 (-1.27)</td>
+<td align="center">-0.256 (-0.97)</td>
+</tr>
+<tr class="odd">
+<td align="left">SMB</td>
+<td align="center">—</td>
+<td align="center">0.025 (0.19)</td>
+<td align="center">0.025 (0.19)</td>
+<td align="center">0.115 (0.91)</td>
+</tr>
+<tr class="even">
+<td align="left">HML</td>
+<td align="center">—</td>
+<td align="center">0.265 (1.94)</td>
+<td align="center">0.265 (1.94)</td>
+<td align="center">0.226 (1.68)</td>
+</tr>
+<tr class="odd">
+<td align="left">Mom</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">-0.013 (-0.04)</td>
+<td align="center">—</td>
+</tr>
+<tr class="even">
+<td align="left">RMW</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">0.494*** (3.62)</td>
+</tr>
+<tr class="odd">
+<td align="left">CMA</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">0.083 (0.62)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Lambda point estimates with 95% NW confidence intervals</span></span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">res_capm</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"CAPM"</span><span class="op">)</span>,</span>
+<span>  <span class="va">res_ff3</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"FF3"</span><span class="op">)</span>,</span>
+<span>  <span class="va">res_ff4</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"FF4 (Carhart)"</span><span class="op">)</span>,</span>
+<span>  <span class="va">res_ff5</span>  <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"FF5"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">term</span> <span class="op">!=</span> <span class="st">"Intercept"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    lo <span class="op">=</span> <span class="va">lambda</span> <span class="op">-</span> <span class="fl">1.96</span> <span class="op">*</span> <span class="va">nw_se</span>,</span>
+<span>    hi <span class="op">=</span> <span class="va">lambda</span> <span class="op">+</span> <span class="fl">1.96</span> <span class="op">*</span> <span class="va">nw_se</span>,</span>
+<span>    term  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">term</span>,  levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Mkt.RF"</span>,<span class="st">"SMB"</span>,<span class="st">"HML"</span>,<span class="st">"Mom"</span>,<span class="st">"RMW"</span>,<span class="st">"CMA"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">model</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CAPM"</span>,<span class="st">"FF3"</span>,<span class="st">"FF4 (Carhart)"</span>,<span class="st">"FF5"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">term</span>, y <span class="op">=</span> <span class="va">lambda</span>, colour <span class="op">=</span> <span class="va">model</span>,</span>
+<span>             ymin <span class="op">=</span> <span class="va">lo</span>, ymax <span class="op">=</span> <span class="va">hi</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, colour <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_errorbar</a></span><span class="op">(</span>position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html" class="external-link">position_dodge</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.25</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html" class="external-link">position_dodge</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_colour_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title    <span class="op">=</span> <span class="st">"FMB Risk Prices λ — 100 Size×BM Portfolios"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Point = NW mean; bars = 95% NW confidence interval"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"Factor"</span>, y <span class="op">=</span> <span class="st">"Risk price λ (%/month)"</span>, colour <span class="op">=</span> <span class="st">"Model"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="assetpricing_files/figure-html/fmb_plot-1.png" class="r-plt" alt="" width="768"></p>
+</div>
+<div class="section level3">
+<h3 id="interpretation">5.5 Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
+</h3>
+<p>The FMB results with the <strong>current full-history data</strong>
+reveal both the classic findings and their modern limitations:</p>
+<ul>
+<li><p><strong>CAPM</strong>: The market beta price
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mtext mathvariant="normal">Mkt</mtext></msub><annotation encoding="application/x-tex">\lambda_{\text{Mkt}}</annotation></semantics></math>)
+is negative and statistically insignificant, while the intercept is
+significantly positive. A priced factor should have
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>≈</mo></mrow><annotation encoding="application/x-tex">\lambda \approx</annotation></semantics></math>
+mean factor return and intercept
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\approx 0</annotation></semantics></math>;
+the CAPM fails both conditions — consistent with Fama and MacBeth (1973)
+and all subsequent replications.</p></li>
+<li><p><strong>FF3</strong>: HML retains a borderline-significant
+positive price of risk, but <strong>SMB’s risk price is statistically
+indistinguishable from zero</strong> in the current sample. The size
+premium largely disappeared after the 1980s (Hou, Xue and Zhang 2015;
+Fama and French 2015). This is a known post-publication result: the
+cross-sectional power of SMB has declined sharply when using data after
+1990.</p></li>
+<li><p><strong>FF4 (Carhart)</strong>: Momentum contributes additional
+cross-sectional explanatory power; its price of risk is consistent in
+sign with the large time-series WML premium documented in Section
+4.</p></li>
+<li><p><strong>FF5</strong>: RMW (profitability) carries the most robust
+positive risk price among the new factors — consistent with Fama and
+French (2015, 2016). CMA’s estimate is positive but less precise. As FF
+(2015) argue, HML becomes partially redundant once RMW and CMA are
+included, which is visible in a smaller HML coefficient relative to the
+FF3 model.</p></li>
+</ul>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="summary">6 Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
+<table class="table">
+<thead><tr class="header">
+<th>Test</th>
+<th>CAPM</th>
+<th>FF3</th>
+<th>FF4</th>
+<th>FF5</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Mean |α| (25 pf, %/mo)</td>
+<td>0.151</td>
+<td>0.114</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>GRS statistic (25 pf)</td>
+<td>3.309</td>
+<td>3.277</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>GRS p-value (25 pf)</td>
+<td>0</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>WML mean return significant?</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>WML alpha significant?</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>By construction</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>SMB priced in FMB?</td>
+<td>N/A</td>
+<td>Weak/No</td>
+<td>Weak/No</td>
+<td>Weak/No</td>
+</tr>
+<tr class="odd">
+<td>HML priced in FMB?</td>
+<td>N/A</td>
+<td>Borderline</td>
+<td>Borderline</td>
+<td>Attenuated</td>
+</tr>
+<tr class="even">
+<td>RMW priced in FMB?</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Mom priced in FMB?</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Yes</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p>The 25 Size×BM portfolios present a severe challenge to the CAPM;
+both CAPM and FF3 are rejected by the GRS test. However, with French’s
+data now spanning <strong>Jul 1926 to Dec 2025</strong>, the FF3
+improvement over CAPM is more modest than in the original 1993 paper.
+The value and size premia have weakened substantially since the
+mid-2000s — a textbook example of <strong>post-publication factor
+decay</strong>. Momentum remains a robust anomaly unexplained by CAPM or
+FF3. In the FMB cross-section, RMW (profitability) is the most reliably
+priced factor in the current sample, while SMB’s risk price is
+statistically negligible.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

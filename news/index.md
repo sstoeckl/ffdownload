@@ -1,5 +1,59 @@
 # Changelog
 
+## FFdownload 1.2.0
+
+### New functions
+
+- [`FFlist()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFlist.md):
+  scrapes Kenneth French’s data library and returns a tidy data frame
+  (or tibble) of all available datasets, with columns `name` and
+  `file_url`. The `name` column can be passed directly to `inputlist`.
+
+- [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFmatch.md):
+  previews fuzzy-match results for a given `inputlist` before
+  downloading. Returns `requested`, `matched`, `edit_distance`, and
+  `similarity` columns so users can verify matches without committing to
+  a download.
+
+- [`FFget()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFget.md):
+  downloads a single dataset directly into the R session (no file I/O).
+  Accepts `frequency` and `subtable` arguments to slice the desired
+  sub-table. Applies `na_values = c(-99, -999, -99.99)` by default.
+
+### Enhancements to `FFdownload()`
+
+- New `na_values` parameter: replace French’s sentinel missing-value
+  codes (e.g. −99, −999, −99.99) with `NA` after numeric conversion.
+
+- New `return_data` parameter: when `TRUE`, returns the `FFdata` list
+  invisibly in addition to saving the `.RData` file.
+
+- New `action` parameter: cleaner alternative to the `download` /
+  `download_only` flag pair. Accepts `"all"`, `"list_only"`,
+  `"download_only"`, or `"process_only"`.
+
+- New `cache_days` parameter: skips re-downloading zip files in `tempd`
+  that are younger than the specified number of days.
+
+- New `match_threshold` parameter: emits a warning when the fuzzy-match
+  similarity for any requested dataset falls below the threshold.
+
+### Enhancements to internal converters
+
+- [`converter()`](https://www.sebastianstoeckl.com/ffdownload/reference/converter.md)
+  and
+  [`converter_tbl()`](https://www.sebastianstoeckl.com/ffdownload/reference/converter_tbl.md)
+  now accept a `na_values` argument and apply sentinel replacement after
+  numeric conversion.
+
+### New vignette
+
+- Added `assetpricing.Rmd`: a complete empirical asset pricing workflow
+  covering time-series tests (CAPM, FF3) on 25 Size×BM portfolios, the
+  GRS joint test, the momentum anomaly, and Fama-MacBeth cross-sectional
+  regressions under CAPM, FF3, FF4 (Carhart), and FF5 across 100 Size×BM
+  portfolios.
+
 ## FFdownload 1.1.1
 
 CRAN release: 2023-10-12

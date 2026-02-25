@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul></li>
@@ -197,7 +197,7 @@
 <span><span class="co"># If edit_distance / nchar(matched_name) &gt; match_threshold → warning</span></span></code></pre></div>
 <p>Additionally, expose a helper:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">FFmatch</span><span class="op">(</span><span class="va">inputlist</span>, exclude_daily <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/FFmatch.html">FFmatch</a></span><span class="op">(</span><span class="va">inputlist</span>, exclude_daily <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Returns a tibble showing: requested_name → matched_file, edit_distance, similarity</span></span>
 <span><span class="co"># Lets users verify matches before downloading</span></span></code></pre></div>
 <hr></div>
@@ -220,7 +220,7 @@
 <span><span class="op">}</span></span></code></pre></div>
 <p>Example usage:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">factors</span> <span class="op">&lt;-</span> <span class="fu">FFget</span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>, subtable <span class="op">=</span> <span class="st">"Temp2"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">factors</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/FFget.html">FFget</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_Factors"</span>, subtable <span class="op">=</span> <span class="st">"Temp2"</span><span class="op">)</span></span></code></pre></div>
 <p>This is the single biggest usability improvement for new and interactive users. It does not modify <code><a href="reference/FFdownload.html">FFdownload()</a></code> at all.</p>
 <hr></div>
 <div class="section level3">
@@ -283,7 +283,7 @@
 <td>None</td>
 </tr><tr class="odd"><td>4.1</td>
 <td>
-<code>FFlist()</code> function</td>
+<code><a href="reference/FFlist.html">FFlist()</a></code> function</td>
 <td>Low</td>
 <td>High</td>
 <td>None</td>
@@ -294,12 +294,12 @@
 <td>None</td>
 </tr><tr class="odd"><td>4.8</td>
 <td>
-<code>FFget()</code> convenience wrapper</td>
+<code><a href="reference/FFget.html">FFget()</a></code> convenience wrapper</td>
 <td>Medium</td>
 <td>Very high</td>
 <td>None</td>
 </tr><tr class="even"><td>4.6</td>
-<td>Fuzzy match warning + <code>FFmatch()</code>
+<td>Fuzzy match warning + <code><a href="reference/FFmatch.html">FFmatch()</a></code>
 </td>
 <td>Medium</td>
 <td>Medium</td>

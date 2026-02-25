@@ -11,7 +11,7 @@ Should help researchers to work with the datasets and update the regularly. Allo
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@ Should help researchers to work with the datasets and update the regularly. Allo
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul></li>
@@ -58,7 +58,12 @@ Should help researchers to work with the datasets and update the regularly. Allo
 <span>  download_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  listsave <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  inputlist <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  format <span class="op">=</span> <span class="st">"xts"</span></span>
+<span>  format <span class="op">=</span> <span class="st">"xts"</span>,</span>
+<span>  na_values <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  action <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cache_days <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  match_threshold <span class="op">=</span> <span class="fl">0.3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,10 +104,42 @@ Is written before inputlist is processed.</p></dd>
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
 <dd><p>(set to xts) specify "xts" or "tbl"/"tibble" for the output format of the nested lists</p></dd>
 
+
+<dt id="arg-na-values">na_values<a class="anchor" aria-label="anchor" href="#arg-na-values"></a></dt>
+<dd><p>numeric vector of sentinel values to replace with <code>NA</code> (e.g. <code>c(-99, -999, -99.99)</code>).
+French's files use -99.99 or -999 to denote missing observations. Default <code>NULL</code> preserves the original
+behaviour (no replacement).</p></dd>
+
+
+<dt id="arg-return-data">return_data<a class="anchor" aria-label="anchor" href="#arg-return-data"></a></dt>
+<dd><p>logical. If <code>TRUE</code>, the <code>FFdata</code> list is returned invisibly in addition to being
+saved to <code>output_file</code>. Default <code>FALSE</code> preserves the original behaviour.</p></dd>
+
+
+<dt id="arg-action">action<a class="anchor" aria-label="anchor" href="#arg-action"></a></dt>
+<dd><p>convenience alternative to the <code>download</code>/<code>download_only</code> flag pair.
+One of <code>"all"</code> (download + process), <code>"list_only"</code> (save file list only),
+<code>"download_only"</code> (download but do not process), or <code>"process_only"</code> (process already-downloaded
+files from <code>tempd</code>). When <code>action</code> is provided it overrides <code>download</code> and
+<code>download_only</code>. Default <code>NULL</code> retains the original flag-based behaviour.</p></dd>
+
+
+<dt id="arg-cache-days">cache_days<a class="anchor" aria-label="anchor" href="#arg-cache-days"></a></dt>
+<dd><p>numeric. When greater than 0 and less than <code>Inf</code>, zip files already present in
+<code>tempd</code> that are younger than <code>cache_days</code> days are reused instead of being re-downloaded.
+Default <code>Inf</code> preserves the original behaviour (never re-download an existing file).</p></dd>
+
+
+<dt id="arg-match-threshold">match_threshold<a class="anchor" aria-label="anchor" href="#arg-match-threshold"></a></dt>
+<dd><p>numeric in [0,1]. If the similarity between a requested <code>inputlist</code> entry and
+its fuzzy-matched filename is below this threshold a warning is emitted. Use <code><a href="FFmatch.html">FFmatch()</a></code> to inspect
+matches before downloading. Default <code>0.3</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>RData file</p>
+    <p>Invisibly returns the <code>FFdata</code> list when <code>return_data = TRUE</code>; otherwise called for its
+side-effect of writing an RData file.</p>
     </div>
 
     <div class="section level2">
@@ -127,15 +164,16 @@ Is written before inputlist is processed.</p></dd>
 <span class="r-in"><span>download_only<span class="op">=</span><span class="cn">FALSE</span>,inputlist<span class="op">=</span><span class="va">inputlist</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="va">tempf</span><span class="op">)</span>; <span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Momentum_Factor`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example 2: Download all non-daily files and process them</span></span></span>
+<span class="r-in"><span><span class="co"># Example 2: Use action parameter and return data directly</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Commented out to not being tested</span></span></span>
-<span class="r-in"><span><span class="co"># tempf2 &lt;- tempfile(fileext = ".RData");</span></span></span>
-<span class="r-in"><span><span class="co"># outd2&lt;- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))</span></span></span>
-<span class="r-in"><span><span class="co"># FFdownload(output_file = tempf2,tempd = outd2, exclude_daily = TRUE, download = TRUE,</span></span></span>
-<span class="r-in"><span><span class="co"># download_only=FALSE, listsave=temptxt)</span></span></span>
-<span class="r-in"><span><span class="co"># load(tempf2)</span></span></span>
-<span class="r-in"><span><span class="co"># FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns</span></span></span>
+<span class="r-in"><span><span class="va">FFdata</span> <span class="op">&lt;-</span> <span class="fu">FFdownload</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  inputlist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F-F_Research_Data_5_Factors_2x3"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  output_file <span class="op">=</span> <span class="va">tempf</span>,</span></span>
+<span class="r-in"><span>  action <span class="op">=</span> <span class="st">"all"</span>,</span></span>
+<span class="r-in"><span>  na_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">99</span>, <span class="op">-</span><span class="fl">999</span>, <span class="op">-</span><span class="fl">99.99</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  return_data <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">FFdata</span><span class="op">$</span><span class="va">`x_F-F_Research_Data_5_Factors_2x3`</span><span class="op">$</span><span class="va">monthly</span><span class="op">$</span><span class="va">Temp2</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

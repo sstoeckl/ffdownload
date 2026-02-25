@@ -1,11 +1,11 @@
-# Converter to read downloaded datasets and automatically put them into one large dataframe with xts
+# Converter to read downloaded datasets and automatically put them into one large dataframe as tibbles
 
-`converter` read/clean/write
+`converter_tbl` read/clean/write
 
 ## Usage
 
 ``` r
-converter_tbl(file)
+converter_tbl(file, na_values = NULL)
 ```
 
 ## Arguments
@@ -13,6 +13,11 @@ converter_tbl(file)
 - file:
 
   downloaded dataset
+
+- na_values:
+
+  numeric vector of sentinel values to replace with `NA` after parsing.
+  Default `NULL` performs no replacement (original behaviour).
 
 ## Value
 

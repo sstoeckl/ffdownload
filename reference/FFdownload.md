@@ -17,7 +17,12 @@ FFdownload(
   download_only = FALSE,
   listsave = NULL,
   inputlist = NULL,
-  format = "xts"
+  format = "xts",
+  na_values = NULL,
+  return_data = FALSE,
+  action = NULL,
+  cache_days = Inf,
+  match_threshold = 0.3
 )
 ```
 
@@ -63,9 +68,47 @@ FFdownload(
   (set to xts) specify "xts" or "tbl"/"tibble" for the output format of
   the nested lists
 
+- na_values:
+
+  numeric vector of sentinel values to replace with `NA` (e.g.
+  `c(-99, -999, -99.99)`). French's files use -99.99 or -999 to denote
+  missing observations. Default `NULL` preserves the original behaviour
+  (no replacement).
+
+- return_data:
+
+  logical. If `TRUE`, the `FFdata` list is returned invisibly in
+  addition to being saved to `output_file`. Default `FALSE` preserves
+  the original behaviour.
+
+- action:
+
+  convenience alternative to the `download`/`download_only` flag pair.
+  One of `"all"` (download + process), `"list_only"` (save file list
+  only), `"download_only"` (download but do not process), or
+  `"process_only"` (process already-downloaded files from `tempd`). When
+  `action` is provided it overrides `download` and `download_only`.
+  Default `NULL` retains the original flag-based behaviour.
+
+- cache_days:
+
+  numeric. When greater than 0 and less than `Inf`, zip files already
+  present in `tempd` that are younger than `cache_days` days are reused
+  instead of being re-downloaded. Default `Inf` preserves the original
+  behaviour (never re-download an existing file).
+
+- match_threshold:
+
+  numeric in \[0,1\]. If the similarity between a requested `inputlist`
+  entry and its fuzzy-matched filename is below this threshold a warning
+  is emitted. Use
+  [`FFmatch()`](https://www.sebastianstoeckl.com/ffdownload/reference/FFmatch.md)
+  to inspect matches before downloading. Default `0.3`.
+
 ## Value
 
-RData file
+Invisibly returns the `FFdata` list when `return_data = TRUE`; otherwise
+called for its side-effect of writing an RData file.
 
 ## Examples
 
@@ -90,14 +133,15 @@ FFdownload(output_file = tempf, exclude_daily=TRUE,tempd=outd,download=FALSE,
 download_only=FALSE,inputlist=inputlist)
 load(tempf); FFdata$`x_F-F_Momentum_Factor`$monthly$Temp2[1:10]
 
-# Example 2: Download all non-daily files and process them
+# Example 2: Use action parameter and return data directly
 
-# Commented out to not being tested
-# tempf2 <- tempfile(fileext = ".RData");
-# outd2<- paste0(tempdir(),"/",format(Sys.time(), "%F_%H-%M"))
-# FFdownload(output_file = tempf2,tempd = outd2, exclude_daily = TRUE, download = TRUE,
-# download_only=FALSE, listsave=temptxt)
-# load(tempf2)
-# FFdownload$x_25_Portfolios_5x5$monthly$average_value_weighted_returns
+FFdata <- FFdownload(
+  inputlist = c("F-F_Research_Data_5_Factors_2x3"),
+  output_file = tempf,
+  action = "all",
+  na_values = c(-99, -999, -99.99),
+  return_data = TRUE
+)
+FFdata$`x_F-F_Research_Data_5_Factors_2x3`$monthly$Temp2
 } # }
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FFdownload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Cross-Sectional Asset Pricing Example</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/assetpricing.html">Empirical Asset Pricing with FFdownload</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-tibble-how-to.html">How-to in the Tidyverse</a></li>
     <li><a class="dropdown-item" href="../articles/FFD-xts-how-to.html">How-to xts</a></li>
   </ul></li>
@@ -37,9 +37,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="core-download-function">Core download function<a class="anchor" aria-label="anchor" href="#core-download-function"></a></h2>
 
-
+      <div class="section-desc"><p>Main workhorse — downloads, processes and saves datasets from Kenneth French’s data library.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -52,22 +52,39 @@
 
         </dt>
         <dd>Downloads Datasets from Kenneth French's Website</dd>
+      </dl></div><div class="section level2">
+      <h2 id="convenience-functions">Convenience functions<a class="anchor" aria-label="anchor" href="#convenience-functions"></a></h2>
+
+      <div class="section-desc"><p>New in v1.2.0 — simpler access for interactive and exploratory use.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="FFget.html">FFget()</a></code>
+
+        </dt>
+        <dd>Download and return a single French dataset directly</dd>
 
         <dt>
 
-          <code><a href="converter.html">converter()</a></code>
+          <code><a href="FFlist.html">FFlist()</a></code>
 
         </dt>
-        <dd>Converter to read downloaded datasets and automatically put them into one large dataframe with xts</dd>
+        <dd>List available datasets on Kenneth French's website</dd>
 
         <dt>
 
-          <code><a href="converter_tbl.html">converter_tbl()</a></code>
+          <code><a href="FFmatch.html">FFmatch()</a></code>
 
         </dt>
-        <dd>Converter to read downloaded datasets and automatically put them into one large dataframe with xts</dd>
+        <dd>Preview fuzzy-matching results before downloading</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
