@@ -8,6 +8,7 @@
 README-FFpic_1.png$
 ^_pkgdown\.yml$
 ^docs$
+^images$
 ^pkgdown$
 ^\.github$
 ^\.claude$
