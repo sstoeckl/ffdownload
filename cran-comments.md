@@ -14,7 +14,7 @@ This is a new minor release of an existing CRAN package. Changes since 1.1.1:
 
 ## Test environments
 
-* Local Windows 11 installation, R 4.4.x
+* Local Windows 11 installation, R 4.5.x
 * GitHub Actions (`.github/workflows/R-CMD-check.yaml`):
   - ubuntu-latest, R release
   - ubuntu-latest, R devel
